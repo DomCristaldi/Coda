@@ -32,6 +32,13 @@ public class Maestro : MonoBehaviour {
         _audio.Play();
 	}
 
+    private float[] DoFFT(int sampleNum)
+    {
+        float[] data = new float[sampleNum];
+        _audio.GetSpectrumData(data, 0, FFTWindow.BlackmanHarris);
+        return data;
+    }
+
     /* Credit to kaappine.fi */
     public float GetAveragedVolume()
     {
@@ -48,8 +55,7 @@ public class Maestro : MonoBehaviour {
 
     public float GetAverageFrequency()
     {
-        float[] data = new float[frequencySamples];
-        _audio.GetSpectrumData(data, 0, FFTWindow.BlackmanHarris);
+        float[] data = DoFFT(frequencySamples);
         float avg = 0;
         for (int i = 0; i < frequencySamples; i++)
         {
@@ -61,11 +67,9 @@ public class Maestro : MonoBehaviour {
 
     /* Credit to kaappine.fi */
     public float GetFundamentalFrequency() {
-        float funFreq = 0.0f;
-        float[] data = new float[frequencySamples];
-        _audio.GetSpectrumData(data, 0, FFTWindow.BlackmanHarris);
-        int i = 0;      //index of the bin with strongest frequency
-        float s = 0f;   //strongest frequency
+        float[] data = DoFFT(frequencySamples);
+        int i = 0;          //index of the bin with strongest frequency
+        float s = 0f;       //strongest frequency
         for (int j = 1; j < frequencySamples; j++)
         {
             if (data[j] > s)
@@ -75,12 +79,21 @@ public class Maestro : MonoBehaviour {
             }
         }
 
-        funFreq = i * sampleRate / frequencySamples;
-        return funFreq;
+        float freqIndex = i;
+        if (i > 0 && i < frequencySamples - 1)
+        {
+            float dL = data[i - 1] / data[i];
+            float dR = data[i + 1] / data[i];
+            freqIndex += 0.5f * (dR * dR - dL * dL);
+        }
+
+        return freqIndex * (AudioSettings.outputSampleRate) / frequencySamples;
+
+        // funFreq = (float)(i * sampleRate) / frequencySamples;
     }
 	
 	void Update () {
         _freq = GetFundamentalFrequency();
-        //Debug.Log(frequency);
+        Debug.Log(_freq);
 	}
 }
