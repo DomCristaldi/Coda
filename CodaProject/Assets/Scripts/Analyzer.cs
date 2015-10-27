@@ -3,14 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public struct Beat
-{
-    private float timeStamp;
-    private float frequency;
+public class Beat {
+    public readonly float timeStamp;
+    public readonly float frequency;
+    public readonly float energy;
+
+    Beat(float tStamp, float freq, float e) {
+        timeStamp = tStamp;
+        frequency = freq;
+        energy = e;
+    }
+
 }
 
 [System.Serializable]
-public class Analyzer{
+public class Analyzer {
 
 	public AudioClip clip;
 	private const float a0 = 0.35875f;
