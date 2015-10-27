@@ -1,10 +1,11 @@
 fileFormatVersion: 2
 guid: 828bae35a8d043e40ba201dafa568703
-timeCreated: 1445816706
-licenseType: Free
+timeCreated: 1445978849
+licenseType: Pro
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - clip: {fileID: 8300000, guid: 007ea0d90cba57b4caac6967c7741f76, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

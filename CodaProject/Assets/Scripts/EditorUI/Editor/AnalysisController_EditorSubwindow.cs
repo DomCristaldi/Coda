@@ -5,10 +5,13 @@ using UnityEditor;
 public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
     
     [SerializeField]
-    public Object musicToAnalyze = null;
+    public AudioClip musicToAnalyze = null;
+    public Analyzer analyzer;
 
     public override void DoWindowContents(int unusedWindowID) {
         //base.DoWindowContents(unusedWindowID);
+
+        analyzer = new Analyzer();
 
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
         /*
@@ -17,7 +20,7 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
         }
         */
 
-        musicToAnalyze = (Object)EditorGUILayout.ObjectField(musicToAnalyze, typeof(Object), true);
+        musicToAnalyze = (AudioClip)EditorGUILayout.ObjectField(musicToAnalyze, typeof(AudioClip), true);
 
         if (GUILayout.Button("Analyze")) {
             if (musicToAnalyze != null) {
@@ -33,8 +36,8 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
     }
 
     public virtual void ProcessAudio() {
-        Debug.LogError("IMPLEMENT ME!!!!");
-
+        //Debug.LogError("IMPLEMENT ME!!!!");
+        analyzer.ProcessAudio(musicToAnalyze as AudioClip);
     }
 
 }
