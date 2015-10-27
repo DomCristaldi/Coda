@@ -94,8 +94,8 @@ using UnityEngine;
          * @param   inverse If true, do an inverse FFT
          */
 		public void run(
-			float[] xRe,
-			float[] xIm,
+			double[] xRe,
+			double[] xIm,
 			bool inverse = false )
 		{
 			uint numFlies = m_N >> 1; // Number of butterflies per sub-FFT
@@ -186,8 +186,8 @@ using UnityEngine;
 			while (x != null)
 			{
 				uint target = x.revTgt;
-				xRe[target] = (float)x.re;
-				xIm[target] = (float)x.im;
+				xRe[target] = x.re;
+				xIm[target] = x.im;
 				x = x.next;
 			}
 		}
