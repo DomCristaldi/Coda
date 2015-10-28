@@ -6,6 +6,9 @@ using System.Collections;
 public class BaseEditorSubwindow : ScriptableObject {
 
     [SerializeField]
+    public string windowName;
+
+    [SerializeField]
     public Rect subwindowRect;
 
     [SerializeField]
@@ -40,6 +43,9 @@ public class BaseEditorSubwindow : ScriptableObject {
 
 
     public virtual void DoWindowContents(int unusedWindowID) {
+
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+
         //GUI.DragWindow();
         /*
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
@@ -51,6 +57,9 @@ public class BaseEditorSubwindow : ScriptableObject {
         EditorGUILayout.EndScrollView();
         */
         //GUI.DragWindow();
+
+        EditorGUILayout.EndScrollView();
+
     }
 
 }

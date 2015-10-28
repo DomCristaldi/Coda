@@ -6,9 +6,12 @@ public class Analyzer_EditorWindow : EditorWindow {
 
     public List<BaseEditorSubwindow> subwindowList;
     [SerializeField]
-    AnalysisController_EditorSubwindow testWindow;
+    AnalysisController_EditorSubwindow analysisControlWindow;
+    [SerializeField]
+    WaveformMarkup_EditorSubwindow waveformMarkupWindow;
 
     private Rect controlsPos = new Rect(0, 0, 200, 200);
+    private Rect waveformPos = new Rect(200, 0, 500, 300);
 
     [MenuItem("Coda/Analyzer")]
     private static void OpenWindow() {
@@ -18,61 +21,44 @@ public class Analyzer_EditorWindow : EditorWindow {
 
 	void OnEnable() {
 
-        
-        if (testWindow == null) {
-            Debug.Log("created new");
-
-            testWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
-            testWindow.Setup(controlsPos);
-        }
-
+        HandleWindowInstantiation();
 
     }
 
     void OnDisable() {
-        testWindow.SaveSettings();
+        analysisControlWindow.SaveSettings();
     }
 
     void OnGUI() {
 
-        if (testWindow == null) {
-            testWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
-            testWindow.Setup(controlsPos);
-        }
+        HandleWindowInstantiation();
 
-        HandleDrawingSubwindow(testWindow);
-
-
-        /*
-        if (GUILayout.Button("CreateInstance")) {
-            testWindow = ScriptableObject.CreateInstance<BaseEditorSubwindow>();
-            testWindow.Setup(new Rect(100, 100, 200, 200));
-        }
-
-        if (testWindow == null) {
-            testWindow = CreateInstance<BaseEditorSubwindow>();
-            testWindow.Setup(new Rect(100, 100, 200, 200));
-        }
-        else {
-            HandleDrawingSubwindow(testWindow);
-        }
-        */
-
-        /*
-        if (testWindow != null) {
-            Debug.Log("good to go");
-            HandleDrawingSubwindow(testWindow);
-        }
-        else {
-            Debug.Log("Must create");
-        }
-        */
+        
+        HandleDrawingSubwindow(analysisControlWindow,
+                               waveformMarkupWindow);
+        
     }
 
-    void HandleDrawingSubwindow(BaseEditorSubwindow subWin) {
+    private void HandleWindowInstantiation() {
+        if (analysisControlWindow == null) {
+            analysisControlWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
+            analysisControlWindow.Setup(controlsPos);
+        }
+
+        if (waveformMarkupWindow == null) {
+            waveformMarkupWindow = ScriptableObject.CreateInstance<WaveformMarkup_EditorSubwindow>();
+            waveformMarkupWindow.Setup(waveformPos);
+        }
+    }
+
+    private void HandleDrawingSubwindow(params BaseEditorSubwindow[] subWindows) {
         BeginWindows();
 
-        subWin.DrawSubwindow(1, "Controls");
+        for (int i = 0; i < subWindows.Length; ++i) {
+
+            subWindows[i].DrawSubwindow(i + 1, subWindows[i].windowName);
+
+        }
 
         EndWindows();
     }
