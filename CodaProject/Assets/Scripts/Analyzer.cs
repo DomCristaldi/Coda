@@ -28,14 +28,15 @@ public class Analyzer {
 	private List<Beat> _beatList;
 	private double[] averages;
 	
-	int numPartitions = 5000;
+	int numPartitions = 10000;
 	float overlapPercent = 0.5f;
 	float inverseOverlap {
 		get {
 			return 1.0f / overlapPercent;
 		}
 	}
-	
+
+
 	public Analyzer() {
 		_beatList = new List<Beat>();
 	}
@@ -50,21 +51,52 @@ public class Analyzer {
 	
 	public IEnumerable ProcessAudioRoutine (AudioClip clip) {	
 		averages = new double[(int)(numPartitions * inverseOverlap) - 1];
-		
+        int samplesPerPartition = (int)(clip.samples / numPartitions);
+
 		//Debug.Log (clip.samples);
-		//Debug.Log ((int)(((numPartitions * inverseOverlap) - 1) * clip.samples / numPartitions * overlapPercent));
-		//Debug.Log (clip.samples / numPartitions * overlapPercent);
+        //Debug.Log ((int)(((numPartitions * inverseOverlap) - 1) * samplesPerPartition * overlapPercent));
+        //Debug.Log (samplesPerPartition * overlapPercent);
+
+        /*
+        float percentOfSong = 0.1f;
+        float[] sampleArray = new float[(int) (clip.samples * percentOfSong)];
+
+        clip.GetData(sampleArray, 0);
+
+        for (int i = 0; i < sampleArray.Length - 1; ++i) {
+            Debug.DrawLine(new Vector3((i - 1) / 100, (float)sampleArray[i] * 10, 0), new Vector3((i) / 100, (float)sampleArray[i + 1] * 10, 0), Color.red);
+        }
+        */
 
 		//for(int i = 0; i < 10000; i++) {
 		int numDivisions = (int)(numPartitions * inverseOverlap) -1;
 		for (int i = 0; i < numDivisions; i++) {
-			//Debug.Log ("" + i + " " + (i * (clip.samples / numPartitions) * overlapPercent));
-			//Debug.Log((int)(i * clip.samples / numPartitions * overlapPercent));
+        //for (int i = 0; i < 0; ++i) {
+            //Debug.Log ("" + i + " " + (i * (samplesPerPartition) * overlapPercent));
+            //Debug.Log((int)(i * samplesPerPartition * overlapPercent));
 			//Debug.Log("" + i + " / " + ((numPartitions * inverseOverlap) - 1));
-			
-			float[] samples = new float[clip.samples / numPartitions * clip.channels];
-			clip.GetData (samples, (int)(i * ((clip.samples / numPartitions) * overlapPercent)));
-			
+
+            float[] samples = new float[samplesPerPartition];
+            
+            //Debug.Log((int)(i * (samples.Length * overlapPercent * clip.channels)));
+
+           // if ((int)(i * (samples.Length * overlapPercent)) > 8000000) {
+                //Debug.Log("boom");
+
+                //Debug.Log(clip.samples);
+
+                //Debug.LogFormat("samplesPerpartition: {0}", samplesPerPartition);
+
+                int input = i * ((int) (samples.Length * overlapPercent));
+
+                //Debug.Log(input);
+
+                clip.GetData(samples, input);
+
+                //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)samples[i] * 10, 0), new Vector3(Mathf.Log(i), (float)samples[i + 1] * 10, 0), Color.red);
+            
+           // }
+            
 			for (int n = 0; n < samples.Length; n++) {
 				samples [n] *= a0 - a1 * Mathf.Cos ((2 * Mathf.PI * n) / samples.Length - 1) + a2 * Mathf.Cos ((4 * Mathf.PI * n) / samples.Length - 1) - a3 * Mathf.Cos ((6 * Mathf.PI * n) / samples.Length - 1);
 			}
@@ -74,7 +106,8 @@ public class Analyzer {
 			double[] double_samples = samples.ToList ().ConvertAll<double> (new System.Converter<float, double> (f2d)).ToArray ();
 			test.run (double_samples, new double[samples.Length], false);
 			
-			double avg = samples.Average ();
+
+			double avg = double_samples.Average ();
 			averages[i] = avg;
 			/*if(avg > 0)
 			{
@@ -82,12 +115,27 @@ public class Analyzer {
 			}*/
 			yield return null;
 		}
-		
-		for(int i = 1; i < averages.Length-1; i++) {
-			
-			Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] + 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] + 10, 0), Color.red);
-		}
-		yield break;
+        
+        for(int i = 1; i < averages.Length-1; i++) {
+            float xScaling = 0.01f;
+            float yScaling = 175.0f;
+
+            Vector3 drawStartPos = new Vector3((i - 1) * xScaling,
+                                               ((float) averages[i - 1]) * yScaling,
+                                               0.0f);
+            Vector3 drawEndPos = new Vector3(i * xScaling,
+                                             ((float)averages[i]) * yScaling,
+                                             0.0f);
+
+            Debug.DrawLine(drawStartPos, drawEndPos, Color.red);
+            
+            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+
+            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
+        }
+        
+        yield break;
 	}
 	
 	public static double f2d(float f) {
