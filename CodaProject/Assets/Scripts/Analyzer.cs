@@ -41,51 +41,16 @@ public class Analyzer {
 		_beatList = new List<Beat>();
 	}
 	
-	public void ProcessAudio (AudioClip clip) {
-		IEnumerator routine = ProcessAudioRoutine (clip).GetEnumerator ();
-		while (routine.MoveNext()) {
-			//yield return null;
-		}
-		
-	}
 	
-	public IEnumerable ProcessAudioRoutine (AudioClip clip) {	
+	public double[] ProcessAudio (AudioClip clip) {	
 		averages = new double[(int)(numPartitions * inverseOverlap) - 1];
         int samplesPerPartition = (int)(clip.samples / numPartitions);
 
-		//Debug.Log (clip.samples);
-        //Debug.Log ((int)(((numPartitions * inverseOverlap) - 1) * samplesPerPartition * overlapPercent));
-        //Debug.Log (samplesPerPartition * overlapPercent);
-
-        /*
-        float percentOfSong = 0.1f;
-        float[] sampleArray = new float[(int) (clip.samples * percentOfSong)];
-
-        clip.GetData(sampleArray, 0);
-
-        for (int i = 0; i < sampleArray.Length - 1; ++i) {
-            Debug.DrawLine(new Vector3((i - 1) / 100, (float)sampleArray[i] * 10, 0), new Vector3((i) / 100, (float)sampleArray[i + 1] * 10, 0), Color.red);
-        }
-        */
-
-		//for(int i = 0; i < 10000; i++) {
 		int numDivisions = (int)(numPartitions * inverseOverlap) -1;
 		for (int i = 0; i < numDivisions; i++) {
-        //for (int i = 0; i < 0; ++i) {
-            //Debug.Log ("" + i + " " + (i * (samplesPerPartition) * overlapPercent));
-            //Debug.Log((int)(i * samplesPerPartition * overlapPercent));
-			//Debug.Log("" + i + " / " + ((numPartitions * inverseOverlap) - 1));
 
             float[] samples = new float[samplesPerPartition];
             
-            //Debug.Log((int)(i * (samples.Length * overlapPercent * clip.channels)));
-
-           // if ((int)(i * (samples.Length * overlapPercent)) > 8000000) {
-                //Debug.Log("boom");
-
-                //Debug.Log(clip.samples);
-
-                //Debug.LogFormat("samplesPerpartition: {0}", samplesPerPartition);
 
                 int input = i * ((int) (samples.Length * overlapPercent));
 
@@ -113,9 +78,10 @@ public class Analyzer {
 			{
 				Debug.Log ("iteration " + i + " average: " + avg);
 			}*/
-			yield return null;
 		}
-        
+
+        //return averages;
+        /*
         for(int i = 1; i < averages.Length-1; i++) {
             float xScaling = 0.01f;
             float yScaling = 175.0f;
@@ -134,8 +100,8 @@ public class Analyzer {
             //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
             //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
         }
-        
-        yield break;
+        */
+        return averages;
 	}
 	
 	public static double f2d(float f) {

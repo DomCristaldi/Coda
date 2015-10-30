@@ -6,12 +6,14 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
     
     [SerializeField]
     public AudioClip musicToAnalyze = null;
-    public Analyzer analyzer;
+    //public Analyzer analyzer;
+
+    public bool triggerAnalysis = false;
 
     public override void DoWindowContents(int unusedWindowID) {
         //base.DoWindowContents(unusedWindowID);
 
-        analyzer = new Analyzer();
+        //analyzer = new Analyzer();
 
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
         /*
@@ -36,8 +38,10 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
     }
 
     public virtual void ProcessAudio() {
+        triggerAnalysis = true;
+
         //Debug.LogError("IMPLEMENT ME!!!!");
-        analyzer.ProcessAudio(musicToAnalyze as AudioClip);
+        //analyzer.ProcessAudio(musicToAnalyze as AudioClip);
     }
 
 }

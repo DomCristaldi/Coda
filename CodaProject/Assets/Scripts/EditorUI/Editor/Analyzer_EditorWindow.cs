@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class Analyzer_EditorWindow : EditorWindow {
 
+    Analyzer analyzer;
+
     public List<BaseEditorSubwindow> subwindowList;
     [SerializeField]
     AnalysisController_EditorSubwindow analysisControlWindow;
@@ -23,6 +25,7 @@ public class Analyzer_EditorWindow : EditorWindow {
 
         HandleWindowInstantiation();
 
+        analyzer = new Analyzer();
     }
 
     void OnDisable() {
@@ -36,6 +39,12 @@ public class Analyzer_EditorWindow : EditorWindow {
         
         HandleDrawingSubwindow(analysisControlWindow,
                                waveformMarkupWindow);
+
+        if (analysisControlWindow.triggerAnalysis == true) {
+            analysisControlWindow.triggerAnalysis = false;
+            waveformMarkupWindow.waveform = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
+        }
+
         
     }
 
