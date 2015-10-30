@@ -68,10 +68,8 @@ public class Analyzer {
         }
         */
 
-		//for(int i = 0; i < 10000; i++) {
 		int numDivisions = (int)(numPartitions * inverseOverlap) -1;
 		for (int i = 0; i < numDivisions; i++) {
-        //for (int i = 0; i < 0; ++i) {
             //Debug.Log ("" + i + " " + (i * (samplesPerPartition) * overlapPercent));
             //Debug.Log((int)(i * samplesPerPartition * overlapPercent));
 			//Debug.Log("" + i + " / " + ((numPartitions * inverseOverlap) - 1));
@@ -109,10 +107,7 @@ public class Analyzer {
 
 			double avg = double_samples.Average ();
 			averages[i] = avg;
-			/*if(avg > 0)
-			{
-				Debug.Log ("iteration " + i + " average: " + avg);
-			}*/
+
 			yield return null;
 		}
         
@@ -127,7 +122,7 @@ public class Analyzer {
                                              ((float)averages[i]) * yScaling,
                                              0.0f);
 
-            Debug.DrawLine(drawStartPos, drawEndPos, Color.red);
+            //Debug.DrawLine(drawStartPos, drawEndPos, Color.red);
             
             //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
 
@@ -135,7 +130,37 @@ public class Analyzer {
             //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
         }
         
+		AnalyzeData(averages);
         yield break;
+	}
+
+	public void DrawData(double[] data) {
+		for(int i = 1; i < averages.Length-1; i++) {
+			float xScaling = 0.01f;
+			float yScaling = 175.0f;
+			
+			Vector3 drawStartPos = new Vector3((i - 1) * xScaling,
+			                                   ((float)data[i - 1]) * yScaling,
+			                                   0.0f);
+			Vector3 drawEndPos = new Vector3(i * xScaling,
+			                                 ((float)data[i]) * yScaling,
+			                                 0.0f);
+			
+			Debug.DrawLine(drawStartPos, drawEndPos, Color.red);
+		}
+	}
+
+	public void AnalyzeData(double[] data) {
+		int numParts = 2000;
+		int partitionSize = data.Length+1/numParts;
+
+		data = data.ToList().Select(i => (double)Mathf.Abs((float)i)).ToArray();
+
+		DrawData(data);
+		/*for(int i = 0; i < partitionSize; i += partitionSize/2) {
+			//finds the average value of the sub
+			double avg = data.Skip(i).Take(partitionSize).Average(); 
+		}*/
 	}
 	
 	public static double f2d(float f) {
