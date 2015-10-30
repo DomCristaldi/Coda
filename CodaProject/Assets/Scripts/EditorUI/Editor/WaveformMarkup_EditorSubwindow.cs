@@ -52,7 +52,9 @@ public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
         float xScaling = waveformRect.width / waveform.Length;
         //float yScaling = waveformRect.height / waveform.Length;
         //float maxVal = (float) waveform.ToList<double>().Max<double>();
-        float yScaling = 500.0f;
+        //Debug.LogFormat("{0} | {1}", maxVal, waveformRect.height);
+
+        float yScaling = 600.0f;
         float yOffset = waveformRect.height / 2.0f;
 
 
