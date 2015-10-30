@@ -41,49 +41,17 @@ public class Analyzer {
 		_beatList = new List<Beat>();
 	}
 	
-	public void ProcessAudio (AudioClip clip) {
-		IEnumerator routine = ProcessAudioRoutine (clip).GetEnumerator ();
-		while (routine.MoveNext()) {
-			//yield return null;
-		}
-		
-	}
 	
-	public IEnumerable ProcessAudioRoutine (AudioClip clip) {	
+	public double[] ProcessAudio (AudioClip clip) {	
 		averages = new double[(int)(numPartitions * inverseOverlap) - 1];
         int samplesPerPartition = (int)(clip.samples / numPartitions);
 
-		//Debug.Log (clip.samples);
-        //Debug.Log ((int)(((numPartitions * inverseOverlap) - 1) * samplesPerPartition * overlapPercent));
-        //Debug.Log (samplesPerPartition * overlapPercent);
-
-        /*
-        float percentOfSong = 0.1f;
-        float[] sampleArray = new float[(int) (clip.samples * percentOfSong)];
-
-        clip.GetData(sampleArray, 0);
-
-        for (int i = 0; i < sampleArray.Length - 1; ++i) {
-            Debug.DrawLine(new Vector3((i - 1) / 100, (float)sampleArray[i] * 10, 0), new Vector3((i) / 100, (float)sampleArray[i + 1] * 10, 0), Color.red);
-        }
-        */
 
 		int numDivisions = (int)(numPartitions * inverseOverlap) -1;
 		for (int i = 0; i < numDivisions; i++) {
-            //Debug.Log ("" + i + " " + (i * (samplesPerPartition) * overlapPercent));
-            //Debug.Log((int)(i * samplesPerPartition * overlapPercent));
-			//Debug.Log("" + i + " / " + ((numPartitions * inverseOverlap) - 1));
 
             float[] samples = new float[samplesPerPartition];
             
-            //Debug.Log((int)(i * (samples.Length * overlapPercent * clip.channels)));
-
-           // if ((int)(i * (samples.Length * overlapPercent)) > 8000000) {
-                //Debug.Log("boom");
-
-                //Debug.Log(clip.samples);
-
-                //Debug.LogFormat("samplesPerpartition: {0}", samplesPerPartition);
 
                 int input = i * ((int) (samples.Length * overlapPercent));
 
@@ -108,30 +76,10 @@ public class Analyzer {
 			double avg = double_samples.Average ();
 			averages[i] = avg;
 
-			yield return null;
 		}
-        
-        for(int i = 1; i < averages.Length-1; i++) {
-            float xScaling = 0.01f;
-            float yScaling = 175.0f;
-
-            Vector3 drawStartPos = new Vector3((i - 1) * xScaling,
-                                               ((float) averages[i - 1]) * yScaling,
-                                               0.0f);
-            Vector3 drawEndPos = new Vector3(i * xScaling,
-                                             ((float)averages[i]) * yScaling,
-                                             0.0f);
-
-            //Debug.DrawLine(drawStartPos, drawEndPos, Color.red);
-            
-            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
-
-            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
-            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
-        }
-        
+		
 		AnalyzeData(averages);
-        yield break;
+        return averages;
 	}
 
 	public void DrawData(double[] data) {
@@ -156,11 +104,12 @@ public class Analyzer {
 
 		data = data.ToList().Select(i => (double)Mathf.Abs((float)i)).ToArray();
 
-		DrawData(data);
-		/*for(int i = 0; i < partitionSize; i += partitionSize/2) {
+		//DrawData(data);
+		for(int i = 0; i < numParts; i += partitionSize/2) {
 			//finds the average value of the sub
-			double avg = data.Skip(i).Take(partitionSize).Average(); 
-		}*/
+			double avg = data.Skip(i).Take(partitionSize).Average();
+			Debug.Log(avg);
+		}
 	}
 	
 	public static double f2d(float f) {
