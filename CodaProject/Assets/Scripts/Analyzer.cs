@@ -4,18 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Beat {
-	public readonly float timeStamp;
-	public readonly float frequency;
-	public readonly float energy;
-	
-	Beat(float tStamp, float freq, float e) {
-		timeStamp = tStamp;
-		frequency = freq;
-		energy = e;
-	}
-	
-}
 
 [System.Serializable]
 public class Analyzer {
@@ -68,7 +56,7 @@ public class Analyzer {
 			}
 			
 			FFT2 test = new FFT2 ();
-			test.init (10);
+			test.init (8);
 			double[] double_samples = samples.ToList ().ConvertAll<double> (new System.Converter<float, double> (f2d)).ToArray ();
 			test.run (double_samples, new double[samples.Length], false);
 			

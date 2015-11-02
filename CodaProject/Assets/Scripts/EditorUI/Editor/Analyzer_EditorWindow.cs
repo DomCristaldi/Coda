@@ -42,10 +42,19 @@ public class Analyzer_EditorWindow : EditorWindow {
 
         if (analysisControlWindow.triggerAnalysis == true) {
             analysisControlWindow.triggerAnalysis = false;
-            waveformMarkupWindow.waveform = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
+            double[] data = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
+            BeatMapToFile(data, analysisControlWindow.musicToAnalyze.name);
+            waveformMarkupWindow.waveform = data;
         }
+    }
 
-        
+    private void BeatMapToFile(double[] data, string name)
+    {
+        BeatMapWriter writer = new BeatMapWriter();
+        BeatMap map = new BeatMap(name);
+        // this is a test using a dummy object
+        map.AddBeat(1, 3f, 5f);
+        writer.WriteBeatMap(map);
     }
 
     private void HandleWindowInstantiation() {
