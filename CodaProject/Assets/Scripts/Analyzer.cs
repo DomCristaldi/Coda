@@ -68,7 +68,7 @@ public class Analyzer {
 			}
 			
 			FFT2 test = new FFT2 ();
-			test.init (10);
+			test.init ((uint)Mathf.Log(samplesPerPartition,2));
 			double[] double_samples = samples.ToList ().ConvertAll<double> (new System.Converter<float, double> (f2d)).ToArray ();
 			test.run (double_samples, new double[samples.Length], false);
 			
@@ -99,17 +99,32 @@ public class Analyzer {
 	}
 
 	public void AnalyzeData(double[] data) {
-		int numParts = 2000;
-		int partitionSize = data.Length+1/numParts;
+		int numParts = 200;
+		int partitionSize = (data.Length+1)/numParts;
+		float overlapPercent = .5f;
+		float threshold = 1 - .75f; //larger float values are more strict
 
 		data = data.ToList().Select(i => (double)Mathf.Abs((float)i)).ToArray();
 
-		//DrawData(data);
-		for(int i = 0; i < numParts; i += partitionSize/2) {
-			//finds the average value of the sub
+		DrawData(data);
+		//Debug.Log(data.Length);
+		//Debug.Log(partitionSize/2);
+		//Debug.Log (data.ToList().Skip(1).Take(5).ToArray().Length);
+		for(int i = 0; i < data.Length-(int)(partitionSize * overlapPercent); i += (int)(partitionSize * overlapPercent)) {
+			//finds the average value of the sub-partition starting at index i and of size partitionSize
 			double avg = data.Skip(i).Take(partitionSize).Average();
-			Debug.Log(avg);
-		}
+            int largest = i;
+			for(int j = 0; j < partitionSize * overlapPercent; j++)
+			{
+                if (data[i + j] > data[largest]) {
+                    largest = i+j;
+                }
+			}
+            if (data[largest] * threshold > avg) {
+                Debug.DrawLine(new Vector3((largest) * .01f, 0, 0), new Vector3((largest) * .01f, -1, 0), Color.green);
+                //Debug.Log(data[i+j]);
+            }
+        }
 	}
 	
 	public static double f2d(float f) {
