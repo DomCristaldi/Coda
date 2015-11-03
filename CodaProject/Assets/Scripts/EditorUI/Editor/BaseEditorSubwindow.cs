@@ -18,6 +18,9 @@ public class BaseEditorSubwindow : ScriptableObject {
 
     public Vector2 scrollPos;
 
+    protected Color debugColor = Color.green;
+    protected float debugSize = 5.0f;
+
     protected virtual void OnDestroy() {
         Debug.Log("Blown up");
     }                                     
@@ -62,4 +65,31 @@ public class BaseEditorSubwindow : ScriptableObject {
 
     }
 
+    public virtual bool IsInSubwindow(Vector2 position) {
+        if (subwindowRect.Contains(position)) {
+            Debug.LogFormat("{0} has it", windowName);
+            return true;
+        }
+        return false;
+    }
+
+    public virtual void DrawWindowDebug() {
+        DrawWindowDebug(subwindowRect);
+    }
+
+    public virtual void DrawWindowDebug(Rect drawRect) {
+        Color originalHandleColor = Handles.color;
+        Handles.color = debugColor;
+
+        Handles.DrawAAPolyLine(debugSize,//size
+                                //positions
+                               drawRect.position,
+                               new Vector2(drawRect.position.x + drawRect.width, drawRect.position.y),
+                               new Vector2(drawRect.position.x + drawRect.width, drawRect.position.y + drawRect.height),
+                               new Vector2(drawRect.position.x, drawRect.position.y + drawRect.height),
+                               drawRect.position);
+
+
+        Handles.color = originalHandleColor;
+    }
 }

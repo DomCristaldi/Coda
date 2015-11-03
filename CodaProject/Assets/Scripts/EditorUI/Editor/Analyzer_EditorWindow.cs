@@ -45,7 +45,10 @@ public class Analyzer_EditorWindow : EditorWindow {
             waveformMarkupWindow.waveform = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
         }
 
-        
+        waveformMarkupWindow.DrawWindowDebug();
+        //if (waveformMarkupWindow.IsInSubwindow())
+
+        Repaint();
     }
 
     private void HandleWindowInstantiation() {

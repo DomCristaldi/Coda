@@ -11,6 +11,9 @@ public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
 
     private Rect waveformRect = new Rect(0, 0, 200, 200);
 
+    private Rect selectionBrush;
+    private float brushPosition = 0.0f;
+
 	public WaveformMarkup_EditorSubwindow() {
         windowName = "Waveform";
     }
@@ -42,6 +45,13 @@ public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
         EditorGUILayout.EndScrollView();
 
         Handles.color = originalHandleColor;
+
+        //Debug.Log(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
+        //IsInSubwindow(Event.current.mousePosition);
+        //DrawWindowDebug();
+        
+        //Debug.Log(GUIUtility.ScreenToGUIPoint(Event.current.mousePosition));
+
     }
 
     private void DrawWaveform() {
