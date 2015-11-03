@@ -11,7 +11,7 @@ public struct Beat
     [XmlAttribute("freq")]
     public float frequency;
     [XmlAttribute("energy")]
-    public float energy;
+    public double energy;
 }
 
 [XmlRoot("BeatMap")]
@@ -21,16 +21,18 @@ public class BeatMap
     [XmlArrayItem("Beat")]
     public List<Beat> beats;
     public string fileName;
+    public float songLength;
 
     public BeatMap() { }
 
-    public BeatMap(string name)
+    public BeatMap(string name, float length)
     {
         beats = new List<Beat>();
         fileName = name;
+        songLength = length;
     }
 
-    public void AddBeat(double timeStamp, float frequency, float energy)
+    public void AddBeat(double timeStamp, float frequency, double energy)
     {
         Beat b;
         b.timeStamp = timeStamp;

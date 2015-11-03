@@ -6,8 +6,10 @@ using System.Linq;
 public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
 
     public Color waveColor = Color.red;
+    public Color beatColor = Color.green;
 
     public double[] waveform = null;
+    public BeatMap beatmap = null;
 
     private Rect waveformRect = new Rect(0, 0, 200, 200);
 
@@ -37,6 +39,9 @@ public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
 
         if (waveform != null) {
             DrawWaveform();
+        }
+        if(beatmap != null) {
+            DrawBeats();
         }
 
         GUILayout.EndArea();
@@ -101,4 +106,31 @@ public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
 
     }
 
+    private void DrawBeats() {
+        Handles.color = beatColor;
+
+        float xScaling = waveformRect.width;// / waveform.Length;
+        float yScaling = 600.0f;
+        float yOffset = waveformRect.height / 2.0f;
+        float totalLength = beatmap.songLength;
+
+        for (int i = 1; i < beatmap.beats.Count; i++) {
+            
+
+
+            Vector3 drawStartPos = new Vector3((float)beatmap.beats[i].timeStamp/totalLength * xScaling,
+                                               yOffset,
+                                               0.0f);
+            Vector3 drawEndPos = new Vector3((float)beatmap.beats[i].timeStamp / totalLength * xScaling,
+                                             yOffset + 5,
+                                             0.0f);
+
+            Handles.DrawLine(drawStartPos, drawEndPos);
+
+            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+
+            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
+        }
+    }
 }
