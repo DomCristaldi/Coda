@@ -107,6 +107,9 @@ public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
     }
 
     private void DrawBeats() {
+
+        Debug.Log("Drawing");
+
         Handles.color = beatColor;
 
         float xScaling = waveformRect.width;// / waveform.Length;

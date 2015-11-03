@@ -42,13 +42,26 @@ public class Analyzer_EditorWindow : EditorWindow {
 
         if (analysisControlWindow.triggerAnalysis == true) {
             analysisControlWindow.triggerAnalysis = false;
-            waveformMarkupWindow.waveform = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
+            double[] data = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
+            BeatMap beats = analyzer.AnalyzeData(data, analysisControlWindow.musicToAnalyze);
+            BeatMapToFile(beats, analysisControlWindow.musicToAnalyze.name);
+            waveformMarkupWindow.waveform = data;
+            waveformMarkupWindow.beatmap = beats;
         }
 
         waveformMarkupWindow.DrawWindowDebug();
         //if (waveformMarkupWindow.IsInSubwindow())
 
         Repaint();
+    }
+
+    private void BeatMapToFile(BeatMap beats, string name) {
+        BeatMapWriter writer = new BeatMapWriter();
+        //BeatMap map = new BeatMap(name, beats.songLength);
+
+        //this is a test using a dummy object
+        //map.AddBeat(1, 3.0f, 5.0f);
+        writer.WriteBeatMap(beats);
     }
 
     private void HandleWindowInstantiation() {
