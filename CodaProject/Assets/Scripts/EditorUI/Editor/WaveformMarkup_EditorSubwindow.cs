@@ -54,6 +54,7 @@ public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
         //Debug.Log(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
         //IsInSubwindow(Event.current.mousePosition);
         //DrawWindowDebug();
+        DrawWindowDebug();
         
         //Debug.Log(GUIUtility.ScreenToGUIPoint(Event.current.mousePosition));
 
@@ -123,7 +124,7 @@ public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
                                                yOffset,
                                                0.0f);
             Vector3 drawEndPos = new Vector3((float)beatmap.beats[i].timeStamp / totalLength * xScaling,
-                                             yOffset + 5,
+                                             yOffset + yScaling,
                                              0.0f);
 
             Handles.DrawLine(drawStartPos, drawEndPos);

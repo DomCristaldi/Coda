@@ -49,8 +49,11 @@ public class Analyzer_EditorWindow : EditorWindow {
             waveformMarkupWindow.beatmap = beats;
         }
 
-        waveformMarkupWindow.DrawWindowDebug();
+        //waveformMarkupWindow.DrawWindowDebug();
         //if (waveformMarkupWindow.IsInSubwindow())
+        if (waveformMarkupWindow.IsInSubwindow(Event.current.mousePosition)) {
+            Debug.LogFormat("waveform has it");
+        }
 
         Repaint();
     }
