@@ -58,12 +58,11 @@ namespace Coda {
 	    }
 
 	    private void BeatMapToFile(BeatMap beats, string name) {
-	        BeatMapWriter writer = new BeatMapWriter();
 	        //BeatMap map = new BeatMap(name, beats.songLength);
 
 	        //this is a test using a dummy object
 	        //map.AddBeat(1, 3.0f, 5.0f);
-	        writer.WriteBeatMap(beats);
+	        BeatMapWriter.WriteBeatMap(beats);
 	    }
 
 	    private void HandleWindowInstantiation() {

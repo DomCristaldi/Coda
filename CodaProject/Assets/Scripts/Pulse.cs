@@ -14,6 +14,6 @@ public class Pulse : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * Maestro.current.GetFundamentalFrequency() * scale, Time.deltaTime * scaleSpeed);
+    	
 	}
 }

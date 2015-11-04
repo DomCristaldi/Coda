@@ -44,11 +44,9 @@ namespace Coda {
 	    }
 	}
 
-	public class BeatMapWriter {
+	public static class BeatMapWriter {
 
-	    public BeatMapWriter() { }
-
-	    public void WriteBeatMap(BeatMap map)
+	    public static void WriteBeatMap(BeatMap map)
 	    {
 	        // Check if beatmap folder exists
 	        if (!Directory.Exists("Assets/Beatmaps"))
