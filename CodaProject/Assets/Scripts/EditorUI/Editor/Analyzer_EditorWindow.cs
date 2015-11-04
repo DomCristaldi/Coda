@@ -42,6 +42,11 @@ namespace Coda {
 	        HandleDrawingSubwindow(analysisControlWindow,
 	                               waveformMarkupWindow);
 
+        //waveformMarkupWindow.DrawWindowDebug();
+        //if (waveformMarkupWindow.IsInSubwindow())
+        if (waveformMarkupWindow.IsInSubwindow(Event.current.mousePosition)) {
+            Debug.LogFormat("waveform has it");
+        }
 	        if (analysisControlWindow.triggerAnalysis == true) {
 	            analysisControlWindow.triggerAnalysis = false;
 	            double[] data = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
@@ -51,7 +56,7 @@ namespace Coda {
 	            waveformMarkupWindow.beatmap = beats;
 	        }
 
-	        waveformMarkupWindow.DrawWindowDebug();
+	        //waveformMarkupWindow.DrawWindowDebug(waveformMarkupWindow.subwindowRect);
 	        //if (waveformMarkupWindow.IsInSubwindow())
 
 	        Repaint();

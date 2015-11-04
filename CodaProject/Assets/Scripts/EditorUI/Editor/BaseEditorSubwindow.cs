@@ -10,6 +10,9 @@ public class BaseEditorSubwindow : ScriptableObject {
 
     [SerializeField]
     public Rect subwindowRect;
+    protected Rect thisSubwindowRect {
+        get { return (new Rect(0, 0, subwindowRect.width, subwindowRect.height)); }
+    }
 
     [SerializeField]
     public float scrollPosX;
@@ -66,17 +69,24 @@ public class BaseEditorSubwindow : ScriptableObject {
     }
 
     public virtual bool IsInSubwindow(Vector2 position) {
+        //Debug.LogFormat("Pos: {0}, Rect: {1}", position, subwindowRect);
         if (subwindowRect.Contains(position)) {
-            Debug.LogFormat("{0} has it", windowName);
             return true;
         }
         return false;
     }
 
+/// <summary>
+/// Draw the borders of a subwindow (adjusted for the current window)
+/// </summary>
     public virtual void DrawWindowDebug() {
-        DrawWindowDebug(subwindowRect);
+        DrawWindowDebug(thisSubwindowRect);
     }
 
+/// <summary>
+/// Draw the borders of a subwindow
+/// </summary>
+/// <param name="drawRect"></param>
     public virtual void DrawWindowDebug(Rect drawRect) {
         Color originalHandleColor = Handles.color;
         Handles.color = debugColor;

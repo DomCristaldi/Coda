@@ -51,6 +51,11 @@ namespace Coda {
 
 	        EditorGUILayout.EndScrollView();
 
+            //Debug.Log(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
+            //IsInSubwindow(Event.current.mousePosition);
+            DrawWindowDebug();
+        
+            //Debug.Log(GUIUtility.ScreenToGUIPoint(Event.current.mousePosition));
 	        Handles.color = originalHandleColor;
 
 	        //Debug.Log(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
@@ -120,12 +125,11 @@ namespace Coda {
 	        for (int i = 1; i < beatmap.beats.Count; i++) {
 	            
 
-
 	            Vector3 drawStartPos = new Vector3((float)beatmap.beats[i].timeStamp/totalLength * xScaling,
 	                                               yOffset,
 	                                               0.0f);
 	            Vector3 drawEndPos = new Vector3((float)beatmap.beats[i].timeStamp / totalLength * xScaling,
-	                                             yOffset + 5,
+	                                             yOffset + yScaling,
 	                                             0.0f);
 
 	            Handles.DrawLine(drawStartPos, drawEndPos);
