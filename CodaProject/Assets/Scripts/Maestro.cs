@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Coda {
 
@@ -8,25 +9,20 @@ namespace Coda {
 
 	    public static Maestro current = null;
 
-	    public int volumeSamples = 256;
-	    public int frequencySamples = 8192;
-	    public int sampleRate = 44100;
-
-	    public float frequency
-	    {
-	        get { return _freq; }
-	    }
-
 	    private AudioSource _audio;
-	    private float _freq;
 
-	    void Awake()
-	    {
-	        if (current == null)
-	        {
+		public delegate void OnBeatDelegate();
+		public OnBeatDelegate onBeat;
+
+		List<MusicBehaviour> listeners;
+
+	    void Awake() {
+	        if (current == null) {
 	            current = this;
 	        }
 	        _audio = GetComponent<AudioSource>();
+			onBeat = OnBeat;
+			listeners = new List<MusicBehaviour>();
 	    }
 
 		void Start () {
@@ -35,6 +31,24 @@ namespace Coda {
 		
 		void Update () {
 
+		}
+
+		void OnBeat () {
+
+		}
+
+		public void Subscribe (MusicBehaviour listener) {
+			if (!listeners.Contains(listener)) {
+				listeners.Add(listener);
+				onBeat += listener.OnBeat;
+			}
+		}
+
+		public void Unsubscribe (MusicBehaviour listener) {
+			if (listeners.Contains(listener)) {
+				listeners.Remove(listener);
+				onBeat -= listener.OnBeat;
+			}
 		}
 	}
 

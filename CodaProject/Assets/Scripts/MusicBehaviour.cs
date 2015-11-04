@@ -1,16 +1,24 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 namespace Coda {
 
 	public class MusicBehaviour : MonoBehaviour {
-		
-		void Start () {
-		
+
+		protected virtual void Awake () {
+
 		}
 
-		void Update () {
-		
+		protected virtual void Start () {
+			Maestro.current.Subscribe(this);
+		}
+
+		protected virtual void Update () {
+			
+		}
+
+		public virtual void OnBeat () {
+
 		}
 	}
 
