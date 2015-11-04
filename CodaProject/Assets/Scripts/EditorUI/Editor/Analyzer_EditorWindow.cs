@@ -2,89 +2,93 @@
 using UnityEditor;
 using System.Collections.Generic;
 
-public class Analyzer_EditorWindow : EditorWindow {
+namespace Coda {
 
-    Analyzer analyzer;
+	public class Analyzer_EditorWindow : EditorWindow {
 
-    public List<BaseEditorSubwindow> subwindowList;
-    [SerializeField]
-    AnalysisController_EditorSubwindow analysisControlWindow;
-    [SerializeField]
-    WaveformMarkup_EditorSubwindow waveformMarkupWindow;
+	    Analyzer analyzer;
 
-    private Rect controlsPos = new Rect(0, 0, 200, 200);
-    private Rect waveformPos = new Rect(200, 0, 500, 300);
+	    public List<BaseEditorSubwindow> subwindowList;
+	    [SerializeField]
+	    AnalysisController_EditorSubwindow analysisControlWindow;
+	    [SerializeField]
+	    WaveformMarkup_EditorSubwindow waveformMarkupWindow;
 
-    [MenuItem("Coda/Analyzer")]
-    private static void OpenWindow() {
-        Analyzer_EditorWindow window = GetWindow<Analyzer_EditorWindow>();
-        window.Show();
-    }
+	    private Rect controlsPos = new Rect(0, 0, 200, 200);
+	    private Rect waveformPos = new Rect(200, 0, 500, 300);
 
-	void OnEnable() {
+	    [MenuItem("Coda/Analyzer")]
+	    private static void OpenWindow() {
+	        Analyzer_EditorWindow window = GetWindow<Analyzer_EditorWindow>();
+	        window.Show();
+	    }
 
-        HandleWindowInstantiation();
+		void OnEnable() {
 
-        analyzer = new Analyzer();
-    }
+	        HandleWindowInstantiation();
 
-    void OnDisable() {
-        analysisControlWindow.SaveSettings();
-    }
+	        analyzer = new Analyzer();
+	    }
 
-    void OnGUI() {
+	    void OnDisable() {
+	        analysisControlWindow.SaveSettings();
+	    }
 
-        HandleWindowInstantiation();
+	    void OnGUI() {
 
-        
-        HandleDrawingSubwindow(analysisControlWindow,
-                               waveformMarkupWindow);
+	        HandleWindowInstantiation();
 
-        if (analysisControlWindow.triggerAnalysis == true) {
-            analysisControlWindow.triggerAnalysis = false;
-            double[] data = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
-            BeatMap beats = analyzer.AnalyzeData(data, analysisControlWindow.musicToAnalyze);
-            BeatMapToFile(beats, analysisControlWindow.musicToAnalyze.name);
-            waveformMarkupWindow.waveform = data;
-            waveformMarkupWindow.beatmap = beats;
-        }
+	        
+	        HandleDrawingSubwindow(analysisControlWindow,
+	                               waveformMarkupWindow);
 
-        waveformMarkupWindow.DrawWindowDebug();
-        //if (waveformMarkupWindow.IsInSubwindow())
+	        if (analysisControlWindow.triggerAnalysis == true) {
+	            analysisControlWindow.triggerAnalysis = false;
+	            double[] data = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
+	            BeatMap beats = analyzer.AnalyzeData(data, analysisControlWindow.musicToAnalyze);
+	            BeatMapToFile(beats, analysisControlWindow.musicToAnalyze.name);
+	            waveformMarkupWindow.waveform = data;
+	            waveformMarkupWindow.beatmap = beats;
+	        }
 
-        Repaint();
-    }
+	        waveformMarkupWindow.DrawWindowDebug();
+	        //if (waveformMarkupWindow.IsInSubwindow())
 
-    private void BeatMapToFile(BeatMap beats, string name) {
-        BeatMapWriter writer = new BeatMapWriter();
-        //BeatMap map = new BeatMap(name, beats.songLength);
+	        Repaint();
+	    }
 
-        //this is a test using a dummy object
-        //map.AddBeat(1, 3.0f, 5.0f);
-        writer.WriteBeatMap(beats);
-    }
+	    private void BeatMapToFile(BeatMap beats, string name) {
+	        BeatMapWriter writer = new BeatMapWriter();
+	        //BeatMap map = new BeatMap(name, beats.songLength);
 
-    private void HandleWindowInstantiation() {
-        if (analysisControlWindow == null) {
-            analysisControlWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
-            analysisControlWindow.Setup(controlsPos);
-        }
+	        //this is a test using a dummy object
+	        //map.AddBeat(1, 3.0f, 5.0f);
+	        writer.WriteBeatMap(beats);
+	    }
 
-        if (waveformMarkupWindow == null) {
-            waveformMarkupWindow = ScriptableObject.CreateInstance<WaveformMarkup_EditorSubwindow>();
-            waveformMarkupWindow.Setup(waveformPos);
-        }
-    }
+	    private void HandleWindowInstantiation() {
+	        if (analysisControlWindow == null) {
+	            analysisControlWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
+	            analysisControlWindow.Setup(controlsPos);
+	        }
 
-    private void HandleDrawingSubwindow(params BaseEditorSubwindow[] subWindows) {
-        BeginWindows();
+	        if (waveformMarkupWindow == null) {
+	            waveformMarkupWindow = ScriptableObject.CreateInstance<WaveformMarkup_EditorSubwindow>();
+	            waveformMarkupWindow.Setup(waveformPos);
+	        }
+	    }
 
-        for (int i = 0; i < subWindows.Length; ++i) {
+	    private void HandleDrawingSubwindow(params BaseEditorSubwindow[] subWindows) {
+	        BeginWindows();
 
-            subWindows[i].DrawSubwindow(i + 1, subWindows[i].windowName);
+	        for (int i = 0; i < subWindows.Length; ++i) {
 
-        }
+	            subWindows[i].DrawSubwindow(i + 1, subWindows[i].windowName);
 
-        EndWindows();
-    }
+	        }
+
+	        EndWindows();
+	    }
+	}
+
 }
