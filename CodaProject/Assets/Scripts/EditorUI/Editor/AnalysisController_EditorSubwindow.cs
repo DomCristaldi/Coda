@@ -11,6 +11,9 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
 
     public bool triggerAnalysis = false;
 
+    [SerializeField]
+    private bool _advancedSettingsFoldout = false;
+
     public override void DoWindowContents(int unusedWindowID) {
         //base.DoWindowContents(unusedWindowID);
 
@@ -36,14 +39,15 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
             }
         }
 
-        
-        //EditorGUILayout.BeginVertical();
-        analyzer.numPartitions = EditorGUILayout.IntField("Number of Partitions", analyzer.numPartitions);
-        analyzer.dataAbstractionOverlapPercent = EditorGUILayout.FloatField("Raw Overlap Percent", analyzer.dataAbstractionOverlapPercent);
-        analyzer.threshold = EditorGUILayout.FloatField("Threshold", analyzer.threshold);
-        analyzer.beatDetectionOverlapPercent = EditorGUILayout.FloatField("Partitioned Overlap Percent", analyzer.beatDetectionOverlapPercent);
-        //EditorGUILayout.EndVertical();
-        
+        _advancedSettingsFoldout = EditorGUILayout.Foldout(_advancedSettingsFoldout, "Advanced Settings");
+        if (_advancedSettingsFoldout) {
+            //EditorGUILayout.BeginVertical();
+            analyzer.numPartitions = EditorGUILayout.IntField("Number of Partitions", analyzer.numPartitions);
+            analyzer.dataAbstractionOverlapPercent = EditorGUILayout.FloatField("Raw Overlap Percent", analyzer.dataAbstractionOverlapPercent);
+            analyzer.threshold = EditorGUILayout.FloatField("Threshold", analyzer.threshold);
+            analyzer.beatDetectionOverlapPercent = EditorGUILayout.FloatField("Partitioned Overlap Percent", analyzer.beatDetectionOverlapPercent);
+            //EditorGUILayout.EndVertical();
+        }
 
         EditorGUILayout.EndScrollView();
     }
