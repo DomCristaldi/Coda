@@ -14,8 +14,8 @@ namespace Coda {
 	    [SerializeField]
 	    WaveformMarkup_EditorSubwindow waveformMarkupWindow;
 
-	    private Rect controlsPos = new Rect(0, 0, 200, 200);
-	    private Rect waveformPos = new Rect(200, 0, 500, 300);
+	    private Rect controlsPos = new Rect(0, 0, 250, 200);
+	    private Rect waveformPos = new Rect(250, 0, 500, 300);
 
 	    [MenuItem("Coda/Analyzer")]
 	    private static void OpenWindow() {
@@ -24,10 +24,11 @@ namespace Coda {
 	    }
 
 		void OnEnable() {
+            analyzer = new Analyzer();
+
 
 	        HandleWindowInstantiation();
 
-	        analyzer = new Analyzer();
 	    }
 
 	    void OnDisable() {
@@ -74,6 +75,7 @@ namespace Coda {
 	        if (analysisControlWindow == null) {
 	            analysisControlWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
 	            analysisControlWindow.Setup(controlsPos);
+                analysisControlWindow.AssignAnalyzer(analyzer);
 	        }
 
 	        if (waveformMarkupWindow == null) {
