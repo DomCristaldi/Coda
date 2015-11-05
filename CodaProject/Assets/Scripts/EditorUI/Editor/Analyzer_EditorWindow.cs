@@ -35,7 +35,7 @@ public class Analyzer_EditorWindow : EditorWindow {
     void OnGUI() {
 
         HandleWindowInstantiation();
-
+       
         
         HandleDrawingSubwindow(analysisControlWindow,
                                waveformMarkupWindow);
