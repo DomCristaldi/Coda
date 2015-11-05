@@ -10,6 +10,7 @@ namespace Coda {
 	    public static Maestro current = null;
 
 		public TextAsset beatmapFile;
+		public BeatMap beatmap;
 	    private AudioSource _audio;
 
 		public delegate void OnBeatDelegate();
@@ -17,21 +18,38 @@ namespace Coda {
 
 		List<MusicBehaviour> listeners;
 
+		private bool audioClipExists;
+
 	    void Awake() {
 	        if (current == null) {
 	            current = this;
 	        }
+			audioClipExists = true;
 	        _audio = GetComponent<AudioSource>();
+			if (_audio.clip == null) {
+				audioClipExists = false;
+				Debug.LogError("Maestro: No Audio Clip!");
+			}
+			else {
+				if ("BeatMap_" + _audio.clip.name.Replace(".mp3", "") != beatmapFile.name) {
+					Debug.LogWarning("Maestro: Audio Clip and Beatmap File mismatch!");
+				}
+			}
 			onBeat = OnBeat;
 			listeners = new List<MusicBehaviour>();
+			beatmap = BeatMapReader.ReadBeatMap(beatmapFile);
 	    }
 
 		void Start () {
-	        _audio.Play();
+			if (audioClipExists) {
+	        	_audio.Play();
+			}
 		}
 		
 		void Update () {
+			if (audioClipExists) {
 
+			}
 		}
 
 		void OnBeat () {
