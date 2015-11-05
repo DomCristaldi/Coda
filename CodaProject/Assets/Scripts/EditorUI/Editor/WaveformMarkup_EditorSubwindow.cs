@@ -3,124 +3,143 @@ using UnityEditor;
 using System.Collections;
 using System.Linq;
 
-public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
+namespace Coda {
 
-    public Color waveColor = Color.red;
-    public Color beatColor = Color.green;
+	public class WaveformMarkup_EditorSubwindow : BaseEditorSubwindow {
 
-    public double[] waveform = null;
-    public BeatMap beatmap = null;
+	    public Color waveColor = Color.red;
+	    public Color beatColor = Color.green;
 
-    private Rect waveformRect = new Rect(0, 0, 200, 200);
+	    public double[] waveform = null;
+	    public BeatMap beatmap = null;
 
-	public WaveformMarkup_EditorSubwindow() {
-        windowName = "Waveform";
-    }
+	    private Rect waveformRect = new Rect(0, 0, 200, 200);
 
-    public override void DoWindowContents(int unusedWindowID) {
-        //base.DoWindowContents(unusedWindowID);
+	    private Rect selectionBrush;
+	    private float brushPosition = 0.0f;
 
-        //Debug.Log(waveformRect.x);
+		public WaveformMarkup_EditorSubwindow() {
+	        windowName = "Waveform";
+	    }
 
-        waveformRect.Set(waveformRect.x,
-                         waveformRect.y,
-                         subwindowRect.width,
-                         subwindowRect.height);
+	    public override void DoWindowContents(int unusedWindowID) {
+	        //base.DoWindowContents(unusedWindowID);
 
-        Color originalHandleColor = Handles.color;
+	        //Debug.Log(waveformRect.x);
 
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+	        waveformRect.Set(waveformRect.x,
+	                         waveformRect.y,
+	                         subwindowRect.width,
+	                         subwindowRect.height);
 
-        Handles.BeginGUI();
-        GUILayout.BeginArea(waveformRect);
+	        Color originalHandleColor = Handles.color;
 
-        if (waveform != null) {
-            DrawWaveform();
-        }
-        if(beatmap != null) {
-            DrawBeats();
-        }
+	        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
-        GUILayout.EndArea();
-        Handles.EndGUI();
+	        Handles.BeginGUI();
+	        GUILayout.BeginArea(waveformRect);
 
-        EditorGUILayout.EndScrollView();
+	        if (waveform != null) {
+	            DrawWaveform();
+	        }
+	        if(beatmap != null) {
+	            DrawBeats();
+	        }
 
-        Handles.color = originalHandleColor;
-    }
+	        GUILayout.EndArea();
+	        Handles.EndGUI();
 
-    private void DrawWaveform() {
+	        EditorGUILayout.EndScrollView();
 
+            //Debug.Log(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
+            //IsInSubwindow(Event.current.mousePosition);
+            DrawWindowDebug();
+        
+            //Debug.Log(GUIUtility.ScreenToGUIPoint(Event.current.mousePosition));
+	        Handles.color = originalHandleColor;
 
-        Handles.color = waveColor;
+	        //Debug.Log(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
+	        //IsInSubwindow(Event.current.mousePosition);
+	        //DrawWindowDebug();
+	        
+	        //Debug.Log(GUIUtility.ScreenToGUIPoint(Event.current.mousePosition));
 
-        float xScaling = waveformRect.width / waveform.Length;
-        //float yScaling = waveformRect.height / waveform.Length;
-        //float maxVal = (float) waveform.ToList<double>().Max<double>();
-        //Debug.LogFormat("{0} | {1}", maxVal, waveformRect.height);
+	    }
 
-        float yScaling = 600.0f;
-        float yOffset = waveformRect.height / 2.0f;
-
-
-
-        for (int i = 1; i < waveform.Length - 1; i++) {
-
-
-
-            Vector3 drawStartPos = new Vector3((i - 1) * xScaling,
-                                               (((float)waveform[i - 1]) * yScaling) + yOffset,
-                                               0.0f);
-            Vector3 drawEndPos = new Vector3(i * xScaling,
-                                             (((float)waveform[i]) * yScaling) + yOffset,
-                                             0.0f);
-
-            Handles.DrawLine(drawStartPos, drawEndPos);
-
-            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
-
-            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
-            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
-        }
-
-        Handles.color = Color.black;
-
-        Handles.DrawLine(waveformRect.position,
-                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y));
-
-        Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + (waveformRect.height / 2.0f)),
-                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + (waveformRect.height / 2.0f)));
-
-        Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + waveformRect.height),
-                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + waveformRect.height));
-
-    }
-
-    private void DrawBeats() {
-        Handles.color = beatColor;
-
-        float xScaling = waveformRect.width;// / waveform.Length;
-        float yScaling = 600.0f;
-        float yOffset = waveformRect.height / 2.0f;
-        float totalLength = beatmap.songLength;
-
-        for (int i = 1; i < beatmap.beats.Count; i++) {
-            
+	    private void DrawWaveform() {
 
 
-            Vector3 drawStartPos = new Vector3((float)beatmap.beats[i].timeStamp/totalLength * xScaling,
-                                               yOffset,
-                                               0.0f);
-            Vector3 drawEndPos = new Vector3((float)beatmap.beats[i].timeStamp / totalLength * xScaling,
-                                             yOffset + 5,
-                                             0.0f);
+	        Handles.color = waveColor;
 
-            Handles.DrawLine(drawStartPos, drawEndPos);
+	        float xScaling = waveformRect.width / waveform.Length;
+	        //float yScaling = waveformRect.height / waveform.Length;
+	        //float maxVal = (float) waveform.ToList<double>().Max<double>();
+	        //Debug.LogFormat("{0} | {1}", maxVal, waveformRect.height);
 
-            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+	        float yScaling = 600.0f;
+	        float yOffset = waveformRect.height / 2.0f;
 
-            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
-            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
-        }
-    }
+
+
+	        for (int i = 1; i < waveform.Length - 1; i++) {
+
+
+
+	            Vector3 drawStartPos = new Vector3((i - 1) * xScaling,
+	                                               (((float)waveform[i - 1]) * yScaling) + yOffset,
+	                                               0.0f);
+	            Vector3 drawEndPos = new Vector3(i * xScaling,
+	                                             (((float)waveform[i]) * yScaling) + yOffset,
+	                                             0.0f);
+
+	            Handles.DrawLine(drawStartPos, drawEndPos);
+
+	            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+
+	            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+	            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
+	        }
+
+	        Handles.color = Color.black;
+
+	        Handles.DrawLine(waveformRect.position,
+	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y));
+
+	        Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + (waveformRect.height / 2.0f)),
+	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + (waveformRect.height / 2.0f)));
+
+	        Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + waveformRect.height),
+	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + waveformRect.height));
+
+	    }
+
+	    private void DrawBeats() {
+
+	        Handles.color = beatColor;
+
+	        float xScaling = waveformRect.width;// / waveform.Length;
+	        float yScaling = 600.0f;
+	        float yOffset = waveformRect.height / 2.0f;
+	        float totalLength = beatmap.songLength;
+
+	        for (int i = 1; i < beatmap.beats.Count; i++) {
+	            
+
+	            Vector3 drawStartPos = new Vector3((float)beatmap.beats[i].timeStamp/totalLength * xScaling,
+	                                               yOffset,
+	                                               0.0f);
+	            Vector3 drawEndPos = new Vector3((float)beatmap.beats[i].timeStamp / totalLength * xScaling,
+	                                             yOffset + yScaling,
+	                                             0.0f);
+
+	            Handles.DrawLine(drawStartPos, drawEndPos);
+
+	            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+
+	            //Debug.DrawLine(new Vector3((i - 1) / 1000, (float)averages[i] * 10, 0), new Vector3((i) / 1000, (float)averages[i + 1] * 10, 0), Color.red);
+	            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
+	        }
+	    }
+	}
+
 }

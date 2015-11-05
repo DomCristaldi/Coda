@@ -1,17 +1,23 @@
 ﻿using UnityEngine;
 using UnityEditor;
+//using Coda;
 
 [System.Serializable]
 public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
     
     [SerializeField]
     public AudioClip musicToAnalyze = null;
-    //public Analyzer analyzer;
+    public Coda.Analyzer analyzer;
 
     public bool triggerAnalysis = false;
 
+    [SerializeField]
+    private bool _advancedSettingsFoldout = false;
+
     public override void DoWindowContents(int unusedWindowID) {
         //base.DoWindowContents(unusedWindowID);
+
+        //AnalysisController_EditorSubwindow controller = (AnalysisController_EditorSubwindow)
 
         //analyzer = new Analyzer();
 
@@ -33,9 +39,22 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
             }
         }
 
+        _advancedSettingsFoldout = EditorGUILayout.Foldout(_advancedSettingsFoldout, "Advanced Settings");
+        if (_advancedSettingsFoldout) {
+            //EditorGUILayout.BeginVertical();
+            analyzer.numPartitions = EditorGUILayout.IntField("Number of Partitions", analyzer.numPartitions);
+            analyzer.dataAbstractionOverlapPercent = EditorGUILayout.FloatField("Raw Overlap Percent", analyzer.dataAbstractionOverlapPercent);
+            analyzer.threshold = EditorGUILayout.FloatField("Threshold", analyzer.threshold);
+            analyzer.beatDetectionOverlapPercent = EditorGUILayout.FloatField("Partitioned Overlap Percent", analyzer.beatDetectionOverlapPercent);
+            //EditorGUILayout.EndVertical();
+        }
 
         EditorGUILayout.EndScrollView();
     }
+
+    public void AssignAnalyzer(Coda.Analyzer analyzer) {
+        this.analyzer = analyzer;
+    } 
 
     public virtual void ProcessAudio() {
         triggerAnalysis = true;

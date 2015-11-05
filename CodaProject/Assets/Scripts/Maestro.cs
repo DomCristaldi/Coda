@@ -1,99 +1,125 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
+namespace Coda {
 
-[RequireComponent(typeof(AudioSource))]
-public class Maestro : MonoBehaviour {
+	[RequireComponent(typeof(AudioSource))]
+	public class Maestro : MonoBehaviour {
 
-    public static Maestro current = null;
+	    public static Maestro current = null;
 
-    public int volumeSamples = 256;
-    public int frequencySamples = 8192;
-    public int sampleRate = 44100;
+		public TextAsset beatmapFile;
+		private BeatMap beatmap;
+	    private AudioSource _audio;
 
-    public float frequency
-    {
-        get { return _freq; }
-    }
+		public bool loopAudio;
 
-    private AudioSource _audio;
-    private float _freq;
+		public delegate void OnBeatDelegate();
+		public OnBeatDelegate onBeat;
 
-    void Awake()
-    {
-        if (current == null)
-        {
-            current = this;
-        }
-        _audio = GetComponent<AudioSource>();
-    }
+		List<MusicBehaviour> listeners;
 
-	void Start () {
-        _audio.Play();
+		private bool audioClipExists;
+
+		private double _beatTimer;
+		private Beat _nextBeat;
+		private int _beatIndex;
+		private bool _songEnded;
+
+	    void Awake() {
+	        if (current == null) {
+	            current = this;
+	        }
+			audioClipExists = true;
+	        _audio = GetComponent<AudioSource>();
+			if (_audio.clip == null) {
+				audioClipExists = false;
+				Debug.LogError("Maestro: No Audio Clip!");
+			}
+			else {
+				if ("BeatMap_" + _audio.clip.name.Replace(".mp3", "") != beatmapFile.name) {
+					Debug.LogWarning("Maestro: Audio Clip and Beatmap File name mismatch!");
+				}
+			}
+			onBeat = OnBeat;
+			listeners = new List<MusicBehaviour>();
+			beatmap = BeatMapReader.ReadBeatMap(beatmapFile);
+	    }
+
+		void Start () {
+			if (audioClipExists) {
+	        	_audio.Play();
+				if (!StartTracking()) {
+					audioClipExists = false;
+					Debug.LogError("Maestro: Beatmap has zero beats!");
+				}
+			}
+		}
+		
+		void Update () {
+			if (audioClipExists) {
+				if (TrackBeats()) {
+					onBeat();
+				}
+			}
+		}
+
+		bool StartTracking () {
+			if (beatmap == null || beatmap.beats.Count == 0) {
+				return false;
+			}
+			_songEnded = false;
+			_nextBeat = beatmap.beats[0];
+			_beatTimer = 0.0;
+			_beatIndex = 0;
+			return true;
+		}
+
+		bool TrackBeats () {
+			if (!(_songEnded && !loopAudio)) {
+				_beatTimer += Time.deltaTime;
+			}
+			else {
+				return false;
+			}
+			if (_songEnded) {
+				if (_beatTimer >= (double)beatmap.songLength) {
+					_audio.Stop();
+					StartTracking();
+					_audio.Play();
+				}
+			}
+			else if (_nextBeat.timeStamp <= _beatTimer) {
+				_beatIndex++;
+				if (_beatIndex == beatmap.beats.Count) {
+					_songEnded = true;
+				}
+				else {
+					_nextBeat = beatmap.beats[_beatIndex];
+				}
+				return true;
+			}
+			return false;
+		}
+
+		void OnBeat () {
+			Debug.Log("Beat.");
+		}
+
+		public void Subscribe (MusicBehaviour listener) {
+			if (!listeners.Contains(listener)) {
+				listeners.Add(listener);
+				onBeat += listener.OnBeat;
+			}
+		}
+
+		public void Unsubscribe (MusicBehaviour listener) {
+			if (listeners.Contains(listener)) {
+				listeners.Remove(listener);
+				onBeat -= listener.OnBeat;
+			}
+		}
 	}
 
-    private float[] DoFFT(int sampleNum)
-    {
-        float[] data = new float[sampleNum];
-        _audio.GetSpectrumData(data, 0, FFTWindow.BlackmanHarris);
-        return data;
-    }
-
-    /* Credit to kaappine.fi */
-    public float GetAveragedVolume()
-    {
-        float[] data = new float[volumeSamples];
-        float avg = 0.0f;
-        _audio.GetOutputData(data, 0);
-        foreach (float f in data)
-        {
-            avg += f;
-        }
-        avg /= volumeSamples;
-        return avg;
-    }
-
-    public float GetAverageFrequency()
-    {
-        float[] data = DoFFT(frequencySamples);
-        float avg = 0;
-        for (int i = 0; i < frequencySamples; i++)
-        {
-            avg += data[i];
-        }
-        avg /= frequencySamples;
-        return avg;
-    }
-
-    /* Credit to kaappine.fi */
-    public float GetFundamentalFrequency() {
-        float[] data = DoFFT(frequencySamples);
-        int i = 0;          //index of the bin with strongest frequency
-        float s = 0f;       //strongest frequency
-        for (int j = 1; j < frequencySamples; j++)
-        {
-            if (data[j] > s)
-            {
-                s = data[j];
-                i = j;
-            }
-        }
-
-        float freqIndex = i;
-        if (i > 0 && i < frequencySamples - 1)
-        {
-            float dL = data[i - 1] / data[i];
-            float dR = data[i + 1] / data[i];
-            freqIndex += 0.5f * (dR * dR - dL * dL);
-        }
-
-        return freqIndex * (AudioSettings.outputSampleRate) / frequencySamples;
-
-        // funFreq = (float)(i * sampleRate) / frequencySamples;
-    }
-	
-	void Update () {
-        _freq = GetFundamentalFrequency();
-        Debug.Log(_freq);
-	}
 }

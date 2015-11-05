@@ -10,6 +10,9 @@ public class BaseEditorSubwindow : ScriptableObject {
 
     [SerializeField]
     public Rect subwindowRect;
+    protected Rect thisSubwindowRect {
+        get { return (new Rect(0, 0, subwindowRect.width, subwindowRect.height)); }
+    }
 
     [SerializeField]
     public float scrollPosX;
@@ -17,6 +20,9 @@ public class BaseEditorSubwindow : ScriptableObject {
     public float scrollPosY;
 
     public Vector2 scrollPos;
+
+    protected Color debugColor = Color.green;
+    protected float debugSize = 5.0f;
 
     protected virtual void OnDestroy() {
         Debug.Log("Blown up");
@@ -62,4 +68,38 @@ public class BaseEditorSubwindow : ScriptableObject {
 
     }
 
+    public virtual bool IsInSubwindow(Vector2 position) {
+        //Debug.LogFormat("Pos: {0}, Rect: {1}", position, subwindowRect);
+        if (subwindowRect.Contains(position)) {
+            return true;
+        }
+        return false;
+    }
+
+/// <summary>
+/// Draw the borders of a subwindow (adjusted for the current window)
+/// </summary>
+    public virtual void DrawWindowDebug() {
+        DrawWindowDebug(thisSubwindowRect);
+    }
+
+/// <summary>
+/// Draw the borders of a subwindow
+/// </summary>
+/// <param name="drawRect"></param>
+    public virtual void DrawWindowDebug(Rect drawRect) {
+        Color originalHandleColor = Handles.color;
+        Handles.color = debugColor;
+
+        Handles.DrawAAPolyLine(debugSize,//size
+                                //positions
+                               drawRect.position,
+                               new Vector2(drawRect.position.x + drawRect.width, drawRect.position.y),
+                               new Vector2(drawRect.position.x + drawRect.width, drawRect.position.y + drawRect.height),
+                               new Vector2(drawRect.position.x, drawRect.position.y + drawRect.height),
+                               drawRect.position);
+
+
+        Handles.color = originalHandleColor;
+    }
 }
