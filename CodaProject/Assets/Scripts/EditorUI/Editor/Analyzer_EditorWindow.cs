@@ -79,7 +79,7 @@ namespace Coda {
         //waveformMarkupWindow.DrawWindowDebug();
         //if (waveformMarkupWindow.IsInSubwindow())
         if (waveformMarkupWindow.IsInSubwindow(Event.current.mousePosition)) {
-            Debug.LogFormat("waveform has it");
+            //Debug.LogFormat("waveform has it");
         }
 	        if (analysisControlWindow.triggerAnalysis == true) {
 	            analysisControlWindow.triggerAnalysis = false;

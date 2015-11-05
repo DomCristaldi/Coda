@@ -53,7 +53,7 @@ namespace Coda {
 
             //Debug.Log(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
             //IsInSubwindow(Event.current.mousePosition);
-            DrawWindowDebug();
+            //DrawWindowDebug();
         
             //Debug.Log(GUIUtility.ScreenToGUIPoint(Event.current.mousePosition));
 	        Handles.color = originalHandleColor;
