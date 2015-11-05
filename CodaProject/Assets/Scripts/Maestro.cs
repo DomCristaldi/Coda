@@ -9,6 +9,7 @@ namespace Coda {
 
 	    public static Maestro current = null;
 
+		public TextAsset beatmapFile;
 	    private AudioSource _audio;
 
 		public delegate void OnBeatDelegate();
