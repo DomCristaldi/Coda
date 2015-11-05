@@ -17,11 +17,15 @@ namespace Coda {
 		private BeatMap _beatList;
 		private double[] averages;
 		
-		int numPartitions = 10000;
-		float overlapPercent = 0.5f;
+		public int numPartitions = 10000;
+		public float dataAbstractionOverlapPercent = 0.5f;
+        public float threshold = 1 - .75f; //larger float values are more strict
+        public float beatDetectionOverlapPercent = .5f;
+
+
 		float inverseOverlap {
 			get {
-				return 1.0f / overlapPercent;
+				return 1.0f / dataAbstractionOverlapPercent;
 			}
 		}
 
@@ -42,7 +46,7 @@ namespace Coda {
 	            float[] samples = new float[samplesPerPartition];
 	            
 
-	                int input = i * ((int) (samples.Length * overlapPercent));
+	                int input = i * ((int) (samples.Length * dataAbstractionOverlapPercent));
 
 	                clip.GetData(samples, input);
 	                        
@@ -84,17 +88,15 @@ namespace Coda {
 	        _beatList = new BeatMap(clip.name, clip.length);
 			int numParts = (int)clip.length;
 			int partitionSize = (data.Length+1)/numParts;
-			float overlapPercent = .5f;
-			float threshold = 1 - .75f; //larger float values are more strict
 
 			data = data.ToList().Select(i => (double)Mathf.Abs((float)i)).ToArray();
 
 			DrawData(data);
-	        for(int i = 0; i < data.Length-(int)(partitionSize * overlapPercent); i += (int)(partitionSize * overlapPercent)) {
+	        for(int i = 0; i < data.Length-(int)(partitionSize * beatDetectionOverlapPercent); i += (int)(partitionSize * beatDetectionOverlapPercent)) {
 	        //finds the average value of the sub-partition starting at index i and of size partitionSize
 	        double avg = data.Skip(i).Take(partitionSize).Average();
 	            int largest = i;
-				for(int j = 0; j < partitionSize * overlapPercent; j++)
+				for(int j = 0; j < partitionSize * beatDetectionOverlapPercent; j++)
 				{
 	                if (data[i + j] > data[largest]) {
 	                    largest = i+j;
