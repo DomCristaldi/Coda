@@ -271,7 +271,7 @@ Prefab:
     - target: {fileID: 11400304, guid: 2d28b9d8ef3a4d54cb223ab9ad334ba5, type: 2}
       propertyPath: beatmapFile
       value: 
-      objectReference: {fileID: 4900000, guid: d5d5b99a50af7134084231c17e09bd0c, type: 3}
+      objectReference: {fileID: 4900000, guid: 4ecb5ea412d84c243bb68ad241cad435, type: 3}
     - target: {fileID: 8277544, guid: 2d28b9d8ef3a4d54cb223ab9ad334ba5, type: 2}
       propertyPath: m_audioClip
       value: 

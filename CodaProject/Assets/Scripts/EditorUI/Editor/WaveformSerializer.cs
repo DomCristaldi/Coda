@@ -6,6 +6,9 @@ using System.IO;
 
 namespace Coda {
 
+	/// <summary>
+	/// Waveform class for data encapsulation.
+	/// </summary>
 	[XmlRoot("Waveform")]
 	public class Waveform {
 		[XmlArray("Data")]
@@ -23,10 +26,17 @@ namespace Coda {
 		}
 	}
 
+	/// <summary>
+	/// Waveform xml serializer class.
+	/// </summary>
 	public class WaveformSerializer {
 
 		public static string filePath = "Assets/Coda/Waveforms";
 
+		/// <summary>
+		/// Writes the waveform data to xml file.
+		/// </summary>
+		/// <param name="waveform">Waveform to write to file.</param>
 		public static void WriteWaveformData (Waveform waveform) {
 			if (!Directory.Exists(filePath)) {
 				Directory.CreateDirectory(filePath);
@@ -38,6 +48,11 @@ namespace Coda {
 			stream.Close();
 		}
 
+		/// <summary>
+		/// Reads the waveform data from file.
+		/// </summary>
+		/// <returns>An instance of the waveform class read from file.</returns>
+		/// <param name="fileName">Xml file name.</param>
 		public static Waveform ReadWaveformData (string fileName) {
 			XmlSerializer serializer = new XmlSerializer(typeof(Waveform));
 			FileStream stream = new FileStream(fileName, FileMode.Open);

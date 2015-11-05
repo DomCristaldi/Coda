@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Coda {
 
+	/// <summary>
+	/// Analyzes songs to obtain beatmaps.
+	/// </summary>
 	[System.Serializable]
 	public class Analyzer {
 		
@@ -34,7 +37,11 @@ namespace Coda {
 			//_beatList = new BeatMap(name);
 		}
 		
-		
+		/// <summary>
+		/// Processes audio.
+		/// </summary>
+		/// <returns>The FFT data array.</returns>
+		/// <param name="clip">Audio clip to process.</param>
 		public double[] ProcessAudio (AudioClip clip) {	
 			averages = new double[(int)(numPartitions * inverseOverlap) - 1];
 	        int samplesPerPartition = (int)(clip.samples / numPartitions);
@@ -68,6 +75,10 @@ namespace Coda {
 	        return averages;
 		}
 
+		/// <summary>
+		/// Draws the data as a waveform.
+		/// </summary>
+		/// <param name="data">Data to draw.</param>
 		public void DrawData(double[] data) {
 			for(int i = 1; i < averages.Length-1; i++) {
 				float xScaling = 0.01f;
@@ -84,6 +95,12 @@ namespace Coda {
 			}
 		}
 
+		/// <summary>
+		/// Analyzes the song data.
+		/// </summary>
+		/// <returns>A beatmap of the song.</returns>
+		/// <param name="data">Raw data.</param>
+		/// <param name="clip">Audio clip to analyze.</param>
 		public BeatMap AnalyzeData(double[] data, AudioClip clip) {
 	        _beatList = new BeatMap(clip.name, clip.length);
 			int numParts = (int)clip.length;
@@ -124,7 +141,11 @@ namespace Coda {
 	        //Debug.Log(_beatList.beats[0].timeStamp);
 	        return _beatList;
 		}
-		
+
+		/// <summary>
+		/// Convert float to double.
+		/// </summary>
+		/// <param name="f">Float to convert.</param>
 		public static double f2d(float f) {
 			return (double)f;
 		}
