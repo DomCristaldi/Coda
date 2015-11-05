@@ -28,26 +28,34 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
         }
         */
 
+        EditorGUILayout.BeginVertical();
+        //field to drop in music file
         musicToAnalyze = (AudioClip)EditorGUILayout.ObjectField(musicToAnalyze, typeof(AudioClip), true);
 
+        //button to proceed with music processing
         if (GUILayout.Button("Analyze")) {
             if (musicToAnalyze != null) {
-                ProcessAudio();
+                ProcessAudio();//triggers audio processing
             }
             else {
                 Debug.LogError("Need a music file to analyze");
             }
         }
 
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.BeginVertical();
+
+        //ADVANCED CONTROLS DROPDOWN MENU
         _advancedSettingsFoldout = EditorGUILayout.Foldout(_advancedSettingsFoldout, "Advanced Settings");
         if (_advancedSettingsFoldout) {
-            //EditorGUILayout.BeginVertical();
             analyzer.numPartitions = EditorGUILayout.IntField("Number of Partitions", analyzer.numPartitions);
             analyzer.dataAbstractionOverlapPercent = EditorGUILayout.FloatField("Raw Overlap Percent", analyzer.dataAbstractionOverlapPercent);
             analyzer.threshold = EditorGUILayout.FloatField("Threshold", analyzer.threshold);
             analyzer.beatDetectionOverlapPercent = EditorGUILayout.FloatField("Partitioned Overlap Percent", analyzer.beatDetectionOverlapPercent);
-            //EditorGUILayout.EndVertical();
         }
+        EditorGUILayout.EndVertical();
+
 
         EditorGUILayout.EndScrollView();
     }

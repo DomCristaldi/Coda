@@ -22,6 +22,10 @@ namespace Coda {
 	        windowName = "Waveform";
 	    }
 
+        /// <summary>
+        /// Override to draw everything specific to this UI element
+        /// </summary>
+        /// <param name="unusedWindowID"></param>
 	    public override void DoWindowContents(int unusedWindowID) {
 	        //base.DoWindowContents(unusedWindowID);
 
@@ -66,6 +70,9 @@ namespace Coda {
 
 	    }
 
+        /// <summary>
+        /// Draws the waveform as lines connecting all positions in the audio file
+        /// </summary>
 	    private void DrawWaveform() {
 
 
@@ -100,19 +107,27 @@ namespace Coda {
 	            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
 	        }
 
+            //lines to draw for perspective
 	        Handles.color = Color.black;
 
+            //top horizontal line
 	        Handles.DrawLine(waveformRect.position,
 	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y));
 
+            //middle horizontal line
 	        Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + (waveformRect.height / 2.0f)),
 	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + (waveformRect.height / 2.0f)));
 
+            //bottom horizontal line
 	        Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + waveformRect.height),
 	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + waveformRect.height));
 
 	    }
 
+
+        /// <summary>
+        /// Draws vertical lines for the locations of beats
+        /// </summary>
 	    private void DrawBeats() {
 
 	        Handles.color = beatColor;

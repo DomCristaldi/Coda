@@ -44,8 +44,9 @@ namespace Coda {
 
 	    void OnGUI() {
 
-	        HandleWindowInstantiation();
+	        HandleWindowInstantiation();//make sure the UI exists
 
+            //read in xml beatmap file if it exists for the supplied audio file
 			if (analysisControlWindow.musicToAnalyze != _prevAudioClip) {
 				if (analysisControlWindow.musicToAnalyze != null) {
 					string filePath = WaveformSerializer.filePath + "/Waveform_" + analysisControlWindow.musicToAnalyze.name + ".xml";
@@ -140,7 +141,7 @@ namespace Coda {
 		/// <summary>
 		/// Handles drawing the specifies subwindows.
 		/// </summary>
-		/// <param name="subWindows">List of sub windows.</param>
+		/// <param name="subWindows">List of all sub windows to draw.</param>
 	    private void HandleDrawingSubwindow(params BaseEditorSubwindow[] subWindows) {
 	        BeginWindows();
 

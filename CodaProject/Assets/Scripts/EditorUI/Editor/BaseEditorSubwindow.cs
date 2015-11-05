@@ -68,6 +68,11 @@ public class BaseEditorSubwindow : ScriptableObject {
 
     }
 
+    /// <summary>
+    /// Check if supplied position is in this subwindow
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public virtual bool IsInSubwindow(Vector2 position) {
         //Debug.LogFormat("Pos: {0}, Rect: {1}", position, subwindowRect);
         if (subwindowRect.Contains(position)) {
@@ -91,6 +96,7 @@ public class BaseEditorSubwindow : ScriptableObject {
         Color originalHandleColor = Handles.color;
         Handles.color = debugColor;
 
+        //use AA Poly Line so we can modify thickness
         Handles.DrawAAPolyLine(debugSize,//size
                                 //positions
                                drawRect.position,
