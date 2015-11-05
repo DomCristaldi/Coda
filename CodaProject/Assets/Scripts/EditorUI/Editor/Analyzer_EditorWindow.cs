@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
@@ -6,6 +6,7 @@ namespace Coda {
 
 	public class Analyzer_EditorWindow : EditorWindow {
 
+		private AudioClip _prevAudioClip;
 	    Analyzer analyzer;
 
 	    public List<BaseEditorSubwindow> subwindowList;
@@ -39,9 +40,35 @@ namespace Coda {
 
 	        HandleWindowInstantiation();
 
+			if (analysisControlWindow.musicToAnalyze != _prevAudioClip) {
+				if (analysisControlWindow.musicToAnalyze != null) {
+					string filePath = WaveformSerializer.filePath + "/Waveform_" + analysisControlWindow.musicToAnalyze.name + ".xml";
+					if (System.IO.File.Exists(filePath)) {
+						Waveform newWave = WaveformSerializer.ReadWaveformData(filePath);
+						waveformMarkupWindow.waveform = newWave.data;
+					}
+					else {
+						waveformMarkupWindow.waveform = null;
+					}
+					filePath = BeatMapper.filePath + "/BeatMap_" + analysisControlWindow.musicToAnalyze.name + ".xml";
+					if (System.IO.File.Exists(filePath)) {
+						BeatMap newMap = BeatMapReader.ReadBeatMap(filePath);
+						waveformMarkupWindow.beatmap = newMap;
+					}
+					else {
+						waveformMarkupWindow.beatmap = null;
+					}
+				}
+				else {
+					waveformMarkupWindow.waveform = null;
+					waveformMarkupWindow.beatmap = null;
+				}
+				_prevAudioClip = analysisControlWindow.musicToAnalyze;
+			}
 	        
 	        HandleDrawingSubwindow(analysisControlWindow,
 	                               waveformMarkupWindow);
+
 
         //waveformMarkupWindow.DrawWindowDebug();
         //if (waveformMarkupWindow.IsInSubwindow())
@@ -52,6 +79,7 @@ namespace Coda {
 	            analysisControlWindow.triggerAnalysis = false;
 	            double[] data = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
 	            BeatMap beats = analyzer.AnalyzeData(data, analysisControlWindow.musicToAnalyze);
+				WaveformToFile(data, analysisControlWindow.musicToAnalyze.name);
 	            BeatMapToFile(beats, analysisControlWindow.musicToAnalyze.name);
 	            waveformMarkupWindow.waveform = data;
 	            waveformMarkupWindow.beatmap = beats;
@@ -63,6 +91,11 @@ namespace Coda {
 	        Repaint();
 	    }
 
+		private void WaveformToFile(double[] data, string name) {
+			Waveform newWave = new Waveform(data, name);
+			WaveformSerializer.WriteWaveformData(newWave);
+		}
+
 	    private void BeatMapToFile(BeatMap beats, string name) {
 	        //BeatMap map = new BeatMap(name, beats.songLength);
 
@@ -72,6 +105,7 @@ namespace Coda {
 	    }
 
 	    private void HandleWindowInstantiation() {
+
 	        if (analysisControlWindow == null) {
 	            analysisControlWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
 	            analysisControlWindow.Setup(controlsPos);

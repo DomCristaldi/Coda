@@ -8,7 +8,7 @@ namespace Coda {
 
 	public class BeatMapper {
 
-		public static string filePath = "Assets/Beatmaps";
+		public static string filePath = "Assets/Coda/Beatmaps";
 
 	}
 
@@ -35,7 +35,7 @@ namespace Coda {
 
 	    public BeatMap(string name, float length) {
 	        beats = new List<Beat>();
-	        fileName = name.Replace(".mp3", "");
+			fileName = name;
 	        songLength = length;
 	    }
 
@@ -69,7 +69,17 @@ namespace Coda {
 		public static BeatMap ReadBeatMap(TextAsset xmlFile) {
 			XmlSerializer serializer = new XmlSerializer(typeof(BeatMap));
 			FileStream stream = new FileStream(BeatMapper.filePath + "/" + xmlFile.name + ".xml", FileMode.Open);
-			return (BeatMap)serializer.Deserialize(stream);
+			BeatMap newMap = (BeatMap)serializer.Deserialize(stream);
+			stream.Close();
+			return newMap;
+		}
+
+		public static BeatMap ReadBeatMap(string filePath) {
+			XmlSerializer serializer = new XmlSerializer(typeof(BeatMap));
+			FileStream stream = new FileStream(filePath, FileMode.Open);
+			BeatMap newMap = (BeatMap)serializer.Deserialize(stream);
+			stream.Close();
+			return newMap;
 		}
 
 	}
