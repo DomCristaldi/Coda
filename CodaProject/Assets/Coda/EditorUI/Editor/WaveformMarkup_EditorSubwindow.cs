@@ -14,6 +14,9 @@ namespace Coda {
 	    public BeatMap beatmap = null;
 
 	    private Rect waveformRect = new Rect(0, 0, 200, 200);
+        private Rect markupRect = new Rect(0, 200, 200, 200);
+
+        private int markupWindowHeight = 100;
 
 	    private Rect selectionBrush;
 	    private float brushPosition = 0.0f;
@@ -34,7 +37,10 @@ namespace Coda {
 	        waveformRect.Set(waveformRect.x,
 	                         waveformRect.y,
 	                         subwindowRect.width,
-	                         subwindowRect.height);
+	                         subwindowRect.height - markupWindowHeight);
+
+            markupRect.Set(0.0f, waveformRect.y + waveformRect.height,
+                           subwindowRect.width, markupWindowHeight);
 
 	        Color originalHandleColor = Handles.color;
 
@@ -44,14 +50,24 @@ namespace Coda {
 	        GUILayout.BeginArea(waveformRect);
 
 	        if (waveform != null) {
-	            DrawWaveform();
-	        }
-	        if(beatmap != null) {
-	            DrawBeats();
+	            DrawWaveform(waveformRect);
 	        }
 
+            GUILayout.EndArea();
+
+            GUILayout.BeginArea(markupRect);
+
+	        if(beatmap != null) {
+	            DrawBeats(markupRect);
+	        }
+
+
 	        GUILayout.EndArea();
-	        Handles.EndGUI();
+
+            DrawOutline();
+
+
+            Handles.EndGUI();
 
 	        EditorGUILayout.EndScrollView();
 
@@ -73,18 +89,18 @@ namespace Coda {
         /// <summary>
         /// Draws the waveform as lines connecting all positions in the audio file
         /// </summary>
-	    private void DrawWaveform() {
+	    private void DrawWaveform(Rect drawArea) {
 
 
 	        Handles.color = waveColor;
 
-	        float xScaling = waveformRect.width / waveform.Length;
+	        float xScaling = drawArea.width / waveform.Length;
 	        //float yScaling = waveformRect.height / waveform.Length;
 	        //float maxVal = (float) waveform.ToList<double>().Max<double>();
 	        //Debug.LogFormat("{0} | {1}", maxVal, waveformRect.height);
 
 	        float yScaling = 600.0f;
-	        float yOffset = waveformRect.height / 2.0f;
+	        float yOffset = drawArea.height / 2.0f;
 
 
 
@@ -107,20 +123,10 @@ namespace Coda {
 	            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
 	        }
 
-            //lines to draw for perspective
-	        Handles.color = Color.black;
+            Handles.color = Color.black;
 
-            //top horizontal line
-	        Handles.DrawLine(waveformRect.position,
-	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y));
-
-            //middle horizontal line
-	        Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + (waveformRect.height / 2.0f)),
-	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + (waveformRect.height / 2.0f)));
-
-            //bottom horizontal line
-	        Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + waveformRect.height),
-	                         new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + waveformRect.height));
+            Handles.DrawLine(new Vector2(drawArea.x, drawArea.y + (drawArea.height / 2.0f)),
+                             new Vector2(drawArea.x + drawArea.width, drawArea.y + (drawArea.height / 2.0f)));
 
 	    }
 
@@ -128,13 +134,14 @@ namespace Coda {
         /// <summary>
         /// Draws vertical lines for the locations of beats
         /// </summary>
-	    private void DrawBeats() {
+	    private void DrawBeats(Rect drawArea) {
 
 	        Handles.color = beatColor;
 
-	        float xScaling = waveformRect.width;// / waveform.Length;
+	        float xScaling = markupRect.width;// / waveform.Length;
 	        float yScaling = 600.0f;
-	        float yOffset = waveformRect.height / 2.0f;
+            //float yOffset = markupRect.height / 2.0f;
+            float yOffset = 0.0f;
 	        float totalLength = beatmap.songLength;
 
 	        for (int i = 1; i < beatmap.beats.Count; i++) {
@@ -155,6 +162,24 @@ namespace Coda {
 	            //Debug.DrawLine(new Vector3(Mathf.Log(i - 1), (float)averages[i] * 10, 0), new Vector3(Mathf.Log(i), (float)averages[i + 1] * 10, 0), Color.red);
 	        }
 	    }
-	}
+
+        private void DrawOutline() {
+            //lines to draw for perspective
+            Handles.color = Color.black;
+
+            //top horizontal line
+            Handles.DrawLine(waveformRect.position,
+                             new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y));
+
+            //middle horizontal line
+            Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + (waveformRect.height / 2.0f)),
+                             new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + (waveformRect.height / 2.0f)));
+
+            //bottom horizontal line
+            Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + waveformRect.height - 0.5f),
+                             new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + waveformRect.height - 0.5f));
+
+        }
+    }
 
 }
