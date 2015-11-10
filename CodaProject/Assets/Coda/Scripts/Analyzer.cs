@@ -108,7 +108,7 @@ namespace Coda {
 
 			data = data.ToList().Select(i => (double)Mathf.Abs((float)i)).ToArray();
 
-			DrawData(data);
+			//DrawData(data);
 	        for(int i = 0; i < data.Length-(int)(partitionSize * beatDetectionOverlapPercent); i += (int)(partitionSize * beatDetectionOverlapPercent)) {
 	        //finds the average value of the sub-partition starting at index i and of size partitionSize
 	        double avg = data.Skip(i).Take(partitionSize).Average();
