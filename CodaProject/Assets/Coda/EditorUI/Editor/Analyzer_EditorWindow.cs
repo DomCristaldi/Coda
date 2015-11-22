@@ -5,21 +5,28 @@ using System.Collections.Generic;
 namespace Coda {
 
 	/// <summary>
-	/// Analyzer editor window. Analyzes songs and outputs beatmaps to file.
+	/// Analyzer editor window. Controls for setting up the Analyzer for songs and outputing beatmaps to file.
 	/// </summary>
 	public class Analyzer_EditorWindow : EditorWindow {
 
-		private AudioClip _prevAudioClip;
-	    Analyzer analyzer;
+        private Analyzer _analyzer;
 
-	    public List<BaseEditorSubwindow> subwindowList;
-	    [SerializeField]
-	    AnalysisController_EditorSubwindow analysisControlWindow;
-	    [SerializeField]
-	    WaveformMarkup_EditorSubwindow waveformMarkupWindow;
 
-	    private Rect controlsPos = new Rect(0, 0, 250, 200);
-	    private Rect waveformPos = new Rect(250, 0, 500, 300);
+	    //public List<BaseEditorSubwindow> subwindowList;
+
+	    [SerializeField]
+	    private AnalysisController_EditorSubwindow _analysisControlWindow;
+	    [SerializeField]
+	    private WaveformMarkup_EditorSubwindow _waveformMarkupWindow;
+
+	    private Rect _controlsPos = new Rect(0, 0, 250, 200);//Analysis Controller Subwindow location & dimensions
+        private Rect _waveformPos = new Rect(250, 0, 500, 300);//Waveform Markup Subwindow location & dimensions
+
+        private AudioClip _prevAudioClip;
+
+        private string _filePath;//string that acts as a holder for any file path we may need
+
+
 
 		/// <summary>
 		/// Opens the analyzer window from the Coda dropdown menu.
@@ -31,71 +38,88 @@ namespace Coda {
 	    }
 
 		void OnEnable() {
-            analyzer = new Analyzer();
+            _analyzer = new Analyzer();
 
-
-	        HandleWindowInstantiation();
+	        HandleWindowInstantiation();//make sure we have windows for our GUI
 
 	    }
 
 	    void OnDisable() {
-	        analysisControlWindow.SaveSettings();
+	        _analysisControlWindow.SaveSettings();//TODO: implement proper serialization of Editor Subwindows
 	    }
 
+        //UPDATE LOOP FOR UNITY EDITOR
 	    void OnGUI() {
 
 	        HandleWindowInstantiation();//make sure the UI exists
 
             //read in xml beatmap file if it exists for the supplied audio file
-			if (analysisControlWindow.musicToAnalyze != _prevAudioClip) {
-				if (analysisControlWindow.musicToAnalyze != null) {
-					string filePath = WaveformSerializer.filePath + "/Waveform_" + analysisControlWindow.musicToAnalyze.name + ".xml";
-					if (System.IO.File.Exists(filePath)) {
-						Waveform newWave = WaveformSerializer.ReadWaveformData(filePath);
-						waveformMarkupWindow.waveform = newWave.data;
+			if (_analysisControlWindow.musicToAnalyze != _prevAudioClip) {//only load if new
+
+                //ANALYZER SONG IF ONE IS ASSIGNED IN THE EDITOR GUI
+				if (_analysisControlWindow.musicToAnalyze != null) {
+
+					_filePath = WaveformSerializer.filePath + "/Waveform_" + _analysisControlWindow.musicToAnalyze.name + ".xml";//location of possibly saved Wavefrom
+
+					if (System.IO.File.Exists(_filePath)) {//retrieve the Waveform if we computed one in the past
+						Waveform newWave = WaveformSerializer.ReadWaveformData(_filePath);
+						_waveformMarkupWindow.waveform = newWave.data;
 					}
 					else {
-						waveformMarkupWindow.waveform = null;
+						_waveformMarkupWindow.waveform = null;
 					}
-					filePath = BeatMapSerializer.filePath + "/BeatMap_" + analysisControlWindow.musicToAnalyze.name + ".xml";
-					if (System.IO.File.Exists(filePath)) {
-						BeatMap newMap = BeatMapSerializer.BeatMapReader.ReadBeatMap(filePath);
-						waveformMarkupWindow.beatmap = newMap;
+
+					_filePath = BeatMapSerializer.filePath + "/BeatMap_" + _analysisControlWindow.musicToAnalyze.name + ".xml";// location of possibly saved Beatmap
+					
+                    if (System.IO.File.Exists(_filePath)) {//load Beatmap for current song if it could be found
+						BeatMap newMap = BeatMapSerializer.BeatMapReader.ReadBeatMap(_filePath);
+						_waveformMarkupWindow.beatmap = newMap;
 					}
 					else {
-						waveformMarkupWindow.beatmap = null;
+						_waveformMarkupWindow.beatmap = null;
 					}
 				}
+
+                //NO SONG WAS ASSIGNED
 				else {
-					waveformMarkupWindow.waveform = null;
-					waveformMarkupWindow.beatmap = null;
+					_waveformMarkupWindow.waveform = null;
+					_waveformMarkupWindow.beatmap = null;
 				}
-				_prevAudioClip = analysisControlWindow.musicToAnalyze;
+
+				_prevAudioClip = _analysisControlWindow.musicToAnalyze;//audio clip from previous frame
 			}
 	        
-	        HandleDrawingSubwindow(analysisControlWindow,
-	                               waveformMarkupWindow);
 
+            //DRAW SUBWINDOWS
+	        HandleDrawingSubwindow(_analysisControlWindow,
+	                               _waveformMarkupWindow);
 
-        //waveformMarkupWindow.DrawWindowDebug();
-        //if (waveformMarkupWindow.IsInSubwindow())
-        if (waveformMarkupWindow.IsInSubwindow(Event.current.mousePosition)) {
-            //Debug.LogFormat("waveform has it");
-        }
-	        if (analysisControlWindow.triggerAnalysis == true) {
-	            analysisControlWindow.triggerAnalysis = false;
-	            double[] data = analyzer.ProcessAudio(analysisControlWindow.musicToAnalyze);
-	            BeatMap beats = analyzer.AnalyzeData(data, analysisControlWindow.musicToAnalyze);
-				WaveformToFile(data, analysisControlWindow.musicToAnalyze.name);
-	            BeatMapToFile(beats, analysisControlWindow.musicToAnalyze.name);
-	            waveformMarkupWindow.waveform = data;
-	            waveformMarkupWindow.beatmap = beats;
+            /*
+            //waveformMarkupWindow.DrawWindowDebug();//shows borders of Subwinows
+
+            if (waveformMarkupWindow.IsInSubwindow(Event.current.mousePosition)) {//check if we can click inside a subwindow
+                //Debug.LogFormat("waveform has it");
+            }
+            */
+
+            //USER HAS TRIGGERED ANALYSIS VIA ANALYZER CONTROLLER SUBWINDOW
+	        if (_analysisControlWindow.triggerAnalysis == true) {
+	            _analysisControlWindow.triggerAnalysis = false;
+
+                //ANALYSIS
+	            double[] waveformData = _analyzer.ProcessAudio(_analysisControlWindow.musicToAnalyze);//feed Analyzer the user-defined audio file to get audio as frequency data
+	            BeatMap beats = _analyzer.AnalyzeData(waveformData, _analysisControlWindow.musicToAnalyze);//feed in frequency data to get a Beatmap
+
+                //SERIALIZATOIN
+				WaveformToFile(waveformData, _analysisControlWindow.musicToAnalyze.name);
+	            BeatMapToFile(beats, _analysisControlWindow.musicToAnalyze.name);
+
+                //DRAWING
+	            _waveformMarkupWindow.waveform = waveformData;
+	            _waveformMarkupWindow.beatmap = beats;
 	        }
 
-	        //waveformMarkupWindow.DrawWindowDebug(waveformMarkupWindow.subwindowRect);
-	        //if (waveformMarkupWindow.IsInSubwindow())
-
-	        Repaint();
+	        Repaint();//force GUI to draw every update even if not clicked on
 	    }
 
 		/// <summary>
@@ -126,15 +150,15 @@ namespace Coda {
 		/// </summary>
 	    private void HandleWindowInstantiation() {
 
-	        if (analysisControlWindow == null) {
-	            analysisControlWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
-	            analysisControlWindow.Setup(controlsPos);
-                analysisControlWindow.AssignAnalyzer(analyzer);
+	        if (_analysisControlWindow == null) {
+	            _analysisControlWindow = ScriptableObject.CreateInstance<AnalysisController_EditorSubwindow>();
+	            _analysisControlWindow.Setup(_controlsPos);
+                _analysisControlWindow.AssignAnalyzer(_analyzer);
 	        }
 
-	        if (waveformMarkupWindow == null) {
-	            waveformMarkupWindow = ScriptableObject.CreateInstance<WaveformMarkup_EditorSubwindow>();
-	            waveformMarkupWindow.Setup(waveformPos);
+	        if (_waveformMarkupWindow == null) {
+	            _waveformMarkupWindow = ScriptableObject.CreateInstance<WaveformMarkup_EditorSubwindow>();
+	            _waveformMarkupWindow.Setup(_waveformPos);
 	        }
 	    }
 

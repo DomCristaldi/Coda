@@ -13,13 +13,15 @@ namespace Coda {
 	    public double[] waveform = null;
 	    public BeatMap beatmap = null;
 
-	    private Rect waveformRect = new Rect(0, 0, 200, 200);
-        private Rect markupRect = new Rect(0, 200, 200, 200);
+	    private Rect _waveformRect = new Rect(0, 0, 200, 200);//area for the Waveform
+        private Rect _beatmapRect = new Rect(0, 200, 200, 200);//area for the Beatmap
 
-        private int markupWindowHeight = 100;
+        private int beatmapWindowHeight = 100;
 
 	    private Rect selectionBrush;
 	    private float brushPosition = 0.0f;
+
+
 
 		public WaveformMarkup_EditorSubwindow() {
 	        windowName = "Waveform";
@@ -34,31 +36,40 @@ namespace Coda {
 
 	        //Debug.Log(waveformRect.x);
 
-	        waveformRect.Set(waveformRect.x,
-	                         waveformRect.y,
+
+	        _waveformRect.Set(_waveformRect.x,
+	                         _waveformRect.y,
 	                         subwindowRect.width,
-	                         subwindowRect.height - markupWindowHeight);
+	                         subwindowRect.height - beatmapWindowHeight);
 
-            markupRect.Set(0.0f, waveformRect.y + waveformRect.height,
-                           subwindowRect.width, markupWindowHeight);
+            _beatmapRect.Set(0.0f, _waveformRect.y + _waveformRect.height,
+                           subwindowRect.width, beatmapWindowHeight);
 
+
+            
 	        Color originalHandleColor = Handles.color;
+
+
 
 	        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
 	        Handles.BeginGUI();
-	        GUILayout.BeginArea(waveformRect);
+	        
+            //DRAW WAVEFORM
+            GUILayout.BeginArea(_waveformRect);
 
 	        if (waveform != null) {
-	            DrawWaveform(waveformRect);
+	            DrawWaveform(_waveformRect);
 	        }
 
             GUILayout.EndArea();
 
-            GUILayout.BeginArea(markupRect);
+
+            //DRAW BEATMAP
+            GUILayout.BeginArea(_beatmapRect);
 
 	        if(beatmap != null) {
-	            DrawBeats(markupRect);
+	            DrawBeats(_beatmapRect);
 	        }
 
 
@@ -68,6 +79,7 @@ namespace Coda {
 
 
             Handles.EndGUI();
+
 
 	        EditorGUILayout.EndScrollView();
 
@@ -138,9 +150,9 @@ namespace Coda {
 
 	        Handles.color = beatColor;
 
-	        float xScaling = markupRect.width;// / waveform.Length;
+	        float xScaling = _beatmapRect.width;// / waveform.Length;
 	        float yScaling = 600.0f;
-            //float yOffset = markupRect.height / 2.0f;
+            //float yOffset = _beatmapRect.height / 2.0f;
             float yOffset = 0.0f;
 	        float totalLength = beatmap.songLength;
 
@@ -168,16 +180,16 @@ namespace Coda {
             Handles.color = Color.black;
 
             //top horizontal line
-            Handles.DrawLine(waveformRect.position,
-                             new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y));
+            Handles.DrawLine(_waveformRect.position,
+                             new Vector2(_waveformRect.position.x + _waveformRect.width, _waveformRect.position.y));
 
             //middle horizontal line
-            Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + (waveformRect.height / 2.0f)),
-                             new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + (waveformRect.height / 2.0f)));
+            Handles.DrawLine(new Vector2(_waveformRect.position.x, _waveformRect.position.y + (_waveformRect.height / 2.0f)),
+                             new Vector2(_waveformRect.position.x + _waveformRect.width, _waveformRect.position.y + (_waveformRect.height / 2.0f)));
 
             //bottom horizontal line
-            Handles.DrawLine(new Vector2(waveformRect.position.x, waveformRect.position.y + waveformRect.height - 0.5f),
-                             new Vector2(waveformRect.position.x + waveformRect.width, waveformRect.position.y + waveformRect.height - 0.5f));
+            Handles.DrawLine(new Vector2(_waveformRect.position.x, _waveformRect.position.y + _waveformRect.height - 0.5f),
+                             new Vector2(_waveformRect.position.x + _waveformRect.width, _waveformRect.position.y + _waveformRect.height - 0.5f));
 
         }
     }

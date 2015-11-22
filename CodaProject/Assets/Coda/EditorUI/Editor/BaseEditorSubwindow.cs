@@ -3,7 +3,7 @@ using UnityEditor;
 using System.Collections;
 
 [System.Serializable]
-public class BaseEditorSubwindow : ScriptableObject {
+public abstract class BaseEditorSubwindow : ScriptableObject {
 
     [SerializeField]
     public string windowName;
@@ -25,20 +25,32 @@ public class BaseEditorSubwindow : ScriptableObject {
     protected float debugSize = 5.0f;
 
     protected virtual void OnDestroy() {
-        Debug.Log("Blown up");
+        //Debug.Log("Blown up");//debug for when Unity destroys an instance of this Subwindow
     }                                     
 
-    public virtual void Setup(Rect windowDimensions) {
+    /// <summary>
+    /// Handle Setup here
+    /// </summary>
+    /// <param name="windowDimensions"></param>
+    public virtual void Setup(Rect windowDimensions) {//Can't pass values through Scriptable Object's constructor, need to make a Setup class
         subwindowRect = windowDimensions;
 
         scrollPos = new Vector2(scrollPosX, scrollPosY);
     }
 
+    /// <summary>
+    /// Serialize this Subwindow
+    /// </summary>
     public virtual void SaveSettings() {
-        scrollPosX = scrollPos.x;
-        scrollPosY = scrollPos.y;
+        //scrollPosX = scrollPos.x;
+        //scrollPosY = scrollPos.y;
     }
 
+    /// <summary>
+    /// Handle drawing logic
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="windowName"></param>
     public virtual void DrawSubwindow(int id, string windowName) {
         //Debug.Log("Drawing Subwindows");
 
@@ -47,26 +59,11 @@ public class BaseEditorSubwindow : ScriptableObject {
 
     }
 
-
-    public virtual void DoWindowContents(int unusedWindowID) {
-
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-
-        //GUI.DragWindow();
-        /*
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-
-        for (int i = 0; i < 50; ++i) {
-            GUILayout.Button("Test");
-        }
-
-        EditorGUILayout.EndScrollView();
-        */
-        //GUI.DragWindow();
-
-        EditorGUILayout.EndScrollView();
-
-    }
+    /// <summary>
+    /// Implement what to draw in the window here (glorified Update loop)
+    /// </summary>
+    /// <param name="unusedWindowID"></param>
+    public abstract void DoWindowContents(int unusedWindowID); 
 
     /// <summary>
     /// Check if supplied position is in this subwindow
@@ -82,14 +79,14 @@ public class BaseEditorSubwindow : ScriptableObject {
     }
 
 /// <summary>
-/// Draw the borders of a subwindow (adjusted for the current window)
+/// DEBUG: Draw the borders of a subwindow (adjusted for the current window)
 /// </summary>
     public virtual void DrawWindowDebug() {
         DrawWindowDebug(thisSubwindowRect);
     }
 
 /// <summary>
-/// Draw the borders of a subwindow
+/// DEBUG: Draw the borders of a subwindow
 /// </summary>
 /// <param name="drawRect"></param>
     public virtual void DrawWindowDebug(Rect drawRect) {
