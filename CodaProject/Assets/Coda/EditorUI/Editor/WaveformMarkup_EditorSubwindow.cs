@@ -36,7 +36,7 @@ namespace Coda {
 
 	        //Debug.Log(waveformRect.x);
 
-
+            //DETERMINE POSITIONS AND DIMENSIONS OF WAVEFORM AND BEATMAP WINDOWS
 	        _waveformRect.Set(_waveformRect.x,
 	                         _waveformRect.y,
 	                         subwindowRect.width,
@@ -98,14 +98,15 @@ namespace Coda {
 
 	    }
 
+
         /// <summary>
         /// Draws the waveform as lines connecting all positions in the audio file
         /// </summary>
 	    private void DrawWaveform(Rect drawArea) {
 
-
 	        Handles.color = waveColor;
 
+            //MATH FOR SCALING WAVEFORM FOR DRAWING IN WINDOW VIEW
 	        float xScaling = drawArea.width / waveform.Length;
 	        //float yScaling = waveformRect.height / waveform.Length;
 	        //float maxVal = (float) waveform.ToList<double>().Max<double>();
@@ -115,7 +116,7 @@ namespace Coda {
 	        float yOffset = drawArea.height / 2.0f;
 
 
-
+            //DRAW THE WAVEFORM
 	        for (int i = 1; i < waveform.Length - 1; i++) {
 
 
@@ -150,12 +151,15 @@ namespace Coda {
 
 	        Handles.color = beatColor;
 
+            //MATH FOR SCALING THE BEATMPA ACROSS WINDOW VIEW
 	        float xScaling = _beatmapRect.width;// / waveform.Length;
 	        float yScaling = 600.0f;
             //float yOffset = _beatmapRect.height / 2.0f;
             float yOffset = 0.0f;
 	        float totalLength = beatmap.songLength;
 
+
+            //DRAW BEATMAP
 	        for (int i = 1; i < beatmap.beats.Count; i++) {
 	            
 
@@ -175,9 +179,12 @@ namespace Coda {
 	        }
 	    }
 
+        //DRAW SOME BLACK LINES FOR POINT OF REFERENCE
         private void DrawOutline() {
-            //lines to draw for perspective
+            
             Handles.color = Color.black;
+
+            //DIVIDE UP WAVEFORM
 
             //top horizontal line
             Handles.DrawLine(_waveformRect.position,
@@ -189,7 +196,8 @@ namespace Coda {
 
             //bottom horizontal line
             Handles.DrawLine(new Vector2(_waveformRect.position.x, _waveformRect.position.y + _waveformRect.height - 0.5f),
-                             new Vector2(_waveformRect.position.x + _waveformRect.width, _waveformRect.position.y + _waveformRect.height - 0.5f));
+                             new Vector2(_waveformRect.position.x + _waveformRect.width, _waveformRect.position.y + _waveformRect.height - 0.5f));//- .0.5f so we can actually see the line
+                                                                                                                                                   //otherwise it's just below the window view
 
         }
     }
