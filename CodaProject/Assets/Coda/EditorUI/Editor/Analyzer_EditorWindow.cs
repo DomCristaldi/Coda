@@ -35,6 +35,7 @@ namespace Coda {
 	    [MenuItem("Coda/Analyzer")]
 	    private static void OpenWindow() {
 	        Analyzer_EditorWindow window = GetWindow<Analyzer_EditorWindow>();
+            window.name = "Audio Analyzer";
 	        window.Show();
 	    }
 
