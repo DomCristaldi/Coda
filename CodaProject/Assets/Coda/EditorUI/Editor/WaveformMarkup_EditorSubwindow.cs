@@ -21,7 +21,7 @@ namespace Coda {
 	    private Rect selectionBrush;
 	    private float brushPosition = 0.0f;
 
-
+        private float zoomLevel = 1.0f;
 
 		public WaveformMarkup_EditorSubwindow() {
 	        windowName = "Waveform";
@@ -35,6 +35,13 @@ namespace Coda {
 	        //base.DoWindowContents(unusedWindowID);
 
 	        //Debug.Log(waveformRect.x);
+
+
+
+            GUILayout.BeginHorizontal();
+
+            zoomLevel = GUILayout.VerticalSlider(zoomLevel, 1.0f, 0.0f);
+
 
             //DETERMINE POSITIONS AND DIMENSIONS OF WAVEFORM AND BEATMAP WINDOWS
 	        _waveformRect.Set(_waveformRect.x,
@@ -96,6 +103,9 @@ namespace Coda {
 	        
 	        //Debug.Log(GUIUtility.ScreenToGUIPoint(Event.current.mousePosition));
 
+            GUILayout.EndHorizontal();
+
+
 	    }
 
 
@@ -107,8 +117,10 @@ namespace Coda {
 	        Handles.color = waveColor;
 
             //MATH FOR SCALING WAVEFORM FOR DRAWING IN WINDOW VIEW
-	        float xScaling = drawArea.width / waveform.Length;
-	        //float yScaling = waveformRect.height / waveform.Length;
+            //float xScaling = (drawArea.width / waveform.Length) * (zoomLevel); //(zoomLevel / 1.0f); //Mathf.Pow(zoomLevel, 2.0f); //(Mathf.Log(zoomLevel, 2.0f));
+            float xScaling = (drawArea.width / Mathf.Lerp(waveform.Length, 1.0f, zoomLevel));
+            
+            //float yScaling = waveformRect.height / waveform.Length;
 	        //float maxVal = (float) waveform.ToList<double>().Max<double>();
 	        //Debug.LogFormat("{0} | {1}", maxVal, waveformRect.height);
 
@@ -152,21 +164,21 @@ namespace Coda {
 	        Handles.color = beatColor;
 
             //MATH FOR SCALING THE BEATMPA ACROSS WINDOW VIEW
-	        float xScaling = _beatmapRect.width;// / waveform.Length;
+            float xScaling = _beatmapRect.width / Mathf.Lerp(beatmap.songLength, 1.0f, zoomLevel);  //(zoomLevel / 1.0f);// / waveform.Length;
 	        float yScaling = 600.0f;
             //float yOffset = _beatmapRect.height / 2.0f;
             float yOffset = 0.0f;
-	        float totalLength = beatmap.songLength;
+	        //float totalLength = beatmap.songLength;
 
 
             //DRAW BEATMAP
 	        for (int i = 1; i < beatmap.beats.Count; i++) {
 	            
 
-	            Vector3 drawStartPos = new Vector3((float)beatmap.beats[i].timeStamp/totalLength * xScaling,
+	            Vector3 drawStartPos = new Vector3((float)beatmap.beats[i].timeStamp * xScaling,
 	                                               yOffset,
 	                                               0.0f);
-	            Vector3 drawEndPos = new Vector3((float)beatmap.beats[i].timeStamp / totalLength * xScaling,
+	            Vector3 drawEndPos = new Vector3((float)beatmap.beats[i].timeStamp * xScaling,
 	                                             yOffset + yScaling,
 	                                             0.0f);
 
