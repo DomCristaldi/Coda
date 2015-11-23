@@ -65,6 +65,7 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
             beatDetectionOverlapPercent = EditorGUILayout.Slider("Partitioned Overlap Percent", beatDetectionOverlapPercent, _minOverlapPercent, 1.0f);
             
         }
+
         EditorGUILayout.EndVertical();
 
 

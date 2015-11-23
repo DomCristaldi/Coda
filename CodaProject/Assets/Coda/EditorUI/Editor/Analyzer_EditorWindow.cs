@@ -18,7 +18,9 @@ namespace Coda {
 	    [SerializeField]
 	    private WaveformMarkup_EditorSubwindow _waveformMarkupWindow;
 
-	    private Rect _controlsPos = new Rect(0, 0, 400, 200);//Analysis Controller Subwindow location & dimensions
+        private int _controlsWidth = 400;
+
+        private Rect _controlsPos = new Rect(0, 0, 400, 200);//Analysis Controller Subwindow location & dimensions
         private Rect _waveformPos = new Rect(400, 0, 500, 300);//Waveform Markup Subwindow location & dimensions
 
         private AudioClip _prevAudioClip;
@@ -41,6 +43,9 @@ namespace Coda {
 
 	        HandleWindowInstantiation();//make sure we have windows for our GUI
 
+            _controlsPos = new Rect(0, 0, _controlsWidth, 200);
+            _waveformPos = new Rect(_controlsWidth, 0, 
+                                    position.width - _controlsWidth >= 0 ? position.width - _controlsWidth : 0, 300);
 	    }
 
 	    void OnDisable() {
@@ -50,7 +55,16 @@ namespace Coda {
         //UPDATE LOOP FOR UNITY EDITOR
 	    void OnGUI() {
 
+            int waveformWidth = (int) (position.width - _controlsWidth);
+
+            _controlsPos = new Rect(0, 0, _controlsWidth, 200);
+            _waveformPos = new Rect(_controlsWidth, 0,
+                                    waveformWidth, 300);
+
 	        HandleWindowInstantiation();//make sure the UI exists
+
+            _waveformMarkupWindow.Setup(_waveformPos);
+
 
             //read in xml beatmap file if it exists for the supplied audio file
 			if (_analysisControlWindow.musicToAnalyze != _prevAudioClip) {//only load if new
