@@ -13,15 +13,16 @@ namespace Coda {
 	public class Analyzer {
 		
 		public AudioClip clip;
-		private const float a0 = 0.35875f;
-		private const float a1 = 0.48829f;
-		private const float a2 = 0.14128f;
-		private const float a3 = 0.01168f;
+        //Float constants for use in the Blackman-Harris windowing function
+		private const float _a0 = 0.35875f;
+		private const float _a1 = 0.48829f;
+		private const float _a2 = 0.14128f;
+		private const float _a3 = 0.01168f;
 		private BeatMap _beatList;
-		private double[] averages;
+		private double[] _averages;
 		
 		public int numPartitions = 10000;
-		public float dataAbstractionOverlapPercent = 0.5f;
+		public float dataAbstractionOverlapPercent = 0.5f; 
         public float threshold = 1 - .75f; //larger float values are more strict
         public float beatDetectionOverlapPercent = .5f;
 
@@ -31,48 +32,47 @@ namespace Coda {
 				return 1.0f / dataAbstractionOverlapPercent;
 			}
 		}
-
-
-		public Analyzer() {
-			//_beatList = new BeatMap(name);
-		}
 		
 		/// <summary>
-		/// Processes audio.
+		/// Processes raw audio data to find average energy for overlapping partitions.
 		/// </summary>
 		/// <returns>The FFT data array.</returns>
 		/// <param name="clip">Audio clip to process.</param>
-		public double[] ProcessAudio (AudioClip clip) {	
-			averages = new double[(int)(numPartitions * inverseOverlap) - 1];
+		public double[] ProcessAudio (AudioClip clip) {
+            Debug.Log(threshold);
+			_averages = new double[(int)(numPartitions * inverseOverlap) - 1];
 	        int samplesPerPartition = (int)(clip.samples / numPartitions);
 
 
-			int numDivisions = (int)(numPartitions * inverseOverlap) -1;
+			int numDivisions = (int)(numPartitions * inverseOverlap) -1; 
+            //Because the partitions overlap, the number of iterations is the number of partitions multiplied by the inverse of the overlap percent
 			for (int i = 0; i < numDivisions; i++) {
 
 	            float[] samples = new float[samplesPerPartition];
+	            int input = i * ((int) (samples.Length * dataAbstractionOverlapPercent)); //the offset to start getting song data increases by overlapPercent as i is incremented
+	            clip.GetData(samples, input); 
 	            
-
-	                int input = i * ((int) (samples.Length * dataAbstractionOverlapPercent));
-
-	                clip.GetData(samples, input);
-	                        
+                //the raw partition data is run through the Blackman-Harris windowing function            
 				for (int n = 0; n < samples.Length; n++) {
-					samples [n] *= a0 - a1 * Mathf.Cos ((2 * Mathf.PI * n) / samples.Length - 1) + a2 * Mathf.Cos ((4 * Mathf.PI * n) / samples.Length - 1) - a3 * Mathf.Cos ((6 * Mathf.PI * n) / samples.Length - 1);
+					samples [n] *= _a0 - _a1 * Mathf.Cos ((2 * Mathf.PI * n) / samples.Length - 1) + _a2 * Mathf.Cos ((4 * Mathf.PI * n) / samples.Length - 1) - _a3 * Mathf.Cos ((6 * Mathf.PI * n) / samples.Length - 1);
 				}
-				
-				FFT2 FFT = new FFT2 ();
+
+
+                FFT2 FFT = new FFT2 ();
 				FFT.init ((uint)Mathf.Log(samplesPerPartition,2));
-				double[] double_samples = samples.ToList ().ConvertAll<double> (new System.Converter<float, double> (f2d)).ToArray ();
+                //our array of floats is converted to an array of doubles for use in the FFT function
+                double[] double_samples = samples.ToList ().ConvertAll<double> (new System.Converter<float, double> (F2D)).ToArray ();
+                //runs our sample data through a Fast Fourier Transform to convert it to the frequency domain
 				FFT.run (double_samples, new double[samples.Length], false);
 				
-
+                //gets the average value for this partition and adds it to an array.
+                //when all of the partitions are completed, averages will contain data for the entire song
 				double avg = double_samples.Average ();
-				averages[i] = avg;
+				_averages[i] = avg;
 
 			}
 			
-	        return averages;
+	        return _averages;
 		}
 
 		/// <summary>
@@ -80,7 +80,7 @@ namespace Coda {
 		/// </summary>
 		/// <param name="data">Data to draw.</param>
 		public void DrawData(double[] data) {
-			for(int i = 1; i < averages.Length-1; i++) {
+			for(int i = 1; i < _averages.Length-1; i++) {
 				float xScaling = 0.01f;
 				float yScaling = 175.0f;
 				
@@ -96,7 +96,7 @@ namespace Coda {
 		}
 
 		/// <summary>
-		/// Analyzes the song data.
+		/// Analyzes the song data for beat information
 		/// </summary>
 		/// <returns>A beatmap of the song.</returns>
 		/// <param name="data">Raw data.</param>
@@ -106,12 +106,13 @@ namespace Coda {
 			int numParts = (int)clip.length;
 			int partitionSize = (data.Length+1)/numParts;
 
+            //We only care about the magnitude of our data, so we get the absolute values before doing analysis
 			data = data.ToList().Select(i => (double)Mathf.Abs((float)i)).ToArray();
 
-			//DrawData(data);
 	        for(int i = 0; i < data.Length-(int)(partitionSize * beatDetectionOverlapPercent); i += (int)(partitionSize * beatDetectionOverlapPercent)) {
-	        //finds the average value of the sub-partition starting at index i and of size partitionSize
-	        double avg = data.Skip(i).Take(partitionSize).Average();
+	            //finds the average value of the sub-partition starting at index i and of size partitionSize
+	            double avg = data.Skip(i).Take(partitionSize).Average();
+                //finds the highest energy sample in the current partition
 	            int largest = i;
 				for(int j = 0; j < partitionSize * beatDetectionOverlapPercent; j++)
 				{
@@ -119,12 +120,13 @@ namespace Coda {
 	                    largest = i+j;
 	                }
 				}
+                //if the highest energy sample is threshold percent larger than the average, then we mark it as a beat.
 	            if (data[largest] * threshold > avg) {
 	                _beatList.AddBeat(((float)largest / data.Length) * clip.length, 1f,data[largest]);
-	                //Debug.Log("Beat found at " + ((float)largest/data.Length) * clip.length);
 	            }
 	        }
 
+            //eliminate double positives (the same beat occurring in two overlapping partitions, for example) by removing beats with extremely similar timestamps
 	        for(int i = 0; i < _beatList.beats.Count-1; i++) {
 	            if((_beatList.beats[i+1].timeStamp - _beatList.beats[i].timeStamp) < .05) {
 	                if(_beatList.beats[i + 1].energy > _beatList.beats[i].energy) {
@@ -135,18 +137,16 @@ namespace Coda {
 	                }
 	                i--;
 	            }
-	            //Debug.DrawLine(new Vector3((largest) * .01f, 0, 0), new Vector3((largest) * .01f, -1, 0), Color.green);
 
 	        }
-	        //Debug.Log(_beatList.beats[0].timeStamp);
 	        return _beatList;
 		}
 
 		/// <summary>
-		/// Convert float to double.
+		/// Utility function for converting float to double. Used in conjunction with System.Linq to convert an array of floats to doubles
 		/// </summary>
 		/// <param name="f">Float to convert.</param>
-		public static double f2d(float f) {
+		private static double F2D(float f) {
 			return (double)f;
 		}
 	}
