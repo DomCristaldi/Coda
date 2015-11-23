@@ -21,10 +21,13 @@ namespace Coda {
 	    private Rect selectionBrush;
 	    private float brushPosition = 0.0f;
 
-        private float zoomLevel = 1.0f;
+        private float _zoomLevel = 1.0f;
+        private float _panAmount = 0.0f;
 
 		public WaveformMarkup_EditorSubwindow() {
 	        windowName = "Waveform";
+
+            _zoomLevel = 1.0f;
 	    }
 
         /// <summary>
@@ -36,11 +39,11 @@ namespace Coda {
 
 	        //Debug.Log(waveformRect.x);
 
+            EditorGUILayout.BeginVertical();
 
+            EditorGUILayout.BeginHorizontal();
 
-            GUILayout.BeginHorizontal();
-
-            zoomLevel = GUILayout.VerticalSlider(zoomLevel, 1.0f, 0.0f);
+            _zoomLevel = GUILayout.VerticalSlider(_zoomLevel, 1.0f, 0.0f);
 
 
             //DETERMINE POSITIONS AND DIMENSIONS OF WAVEFORM AND BEATMAP WINDOWS
@@ -103,9 +106,11 @@ namespace Coda {
 	        
 	        //Debug.Log(GUIUtility.ScreenToGUIPoint(Event.current.mousePosition));
 
-            GUILayout.EndHorizontal();
+            EditorGUILayout.EndHorizontal();
 
+            _panAmount = GUILayout.HorizontalSlider(_panAmount, 0.0f, 1.0f);
 
+            EditorGUILayout.EndVertical();
 	    }
 
 
@@ -118,7 +123,9 @@ namespace Coda {
 
             //MATH FOR SCALING WAVEFORM FOR DRAWING IN WINDOW VIEW
             //float xScaling = (drawArea.width / waveform.Length) * (zoomLevel); //(zoomLevel / 1.0f); //Mathf.Pow(zoomLevel, 2.0f); //(Mathf.Log(zoomLevel, 2.0f));
-            float xScaling = (drawArea.width / Mathf.Lerp(waveform.Length, 1.0f, zoomLevel));
+            float zoomLerp = Mathf.Lerp(waveform.Length, 1.0f, _zoomLevel);
+
+            float xScaling = (drawArea.width / zoomLerp) ;
             
             //float yScaling = waveformRect.height / waveform.Length;
 	        //float maxVal = (float) waveform.ToList<double>().Max<double>();
@@ -127,16 +134,17 @@ namespace Coda {
 	        float yScaling = 600.0f;
 	        float yOffset = drawArea.height / 2.0f;
 
+            float panningAmount = _panAmount * (waveform.Length - zoomLerp); //(_panAmount * Mathf.Lerp(1.0f, waveform.Length, _zoomLevel));
 
             //DRAW THE WAVEFORM
 	        for (int i = 1; i < waveform.Length - 1; i++) {
 
 
 
-	            Vector3 drawStartPos = new Vector3((i - 1) * xScaling,
+                Vector3 drawStartPos = new Vector3(((i - 1) * xScaling) - panningAmount,
 	                                               (((float)waveform[i - 1]) * yScaling) + yOffset,
 	                                               0.0f);
-	            Vector3 drawEndPos = new Vector3(i * xScaling,
+                Vector3 drawEndPos = new Vector3((i * xScaling) - panningAmount,
 	                                             (((float)waveform[i]) * yScaling) + yOffset,
 	                                             0.0f);
 
@@ -164,7 +172,7 @@ namespace Coda {
 	        Handles.color = beatColor;
 
             //MATH FOR SCALING THE BEATMPA ACROSS WINDOW VIEW
-            float xScaling = _beatmapRect.width / Mathf.Lerp(beatmap.songLength, 1.0f, zoomLevel);  //(zoomLevel / 1.0f);// / waveform.Length;
+            float xScaling = _beatmapRect.width / Mathf.Lerp(beatmap.songLength, 1.0f, _zoomLevel);  //(zoomLevel / 1.0f);// / waveform.Length;
 	        float yScaling = 600.0f;
             //float yOffset = _beatmapRect.height / 2.0f;
             float yOffset = 0.0f;
