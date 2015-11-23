@@ -19,14 +19,7 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
 
         //AnalysisController_EditorSubwindow controller = (AnalysisController_EditorSubwindow)
 
-        //analyzer = new Analyzer();
-
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-        /*
-        for (int i = 0; i < 50; ++i) {
-            GUILayout.Button("Test");
-        }
-        */
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);//allows for window scrolling
 
         EditorGUILayout.BeginVertical();
         //field to drop in music file
@@ -44,6 +37,7 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
 
         EditorGUILayout.EndVertical();
 
+
         EditorGUILayout.BeginVertical();
 
         //ADVANCED CONTROLS DROPDOWN MENU
@@ -60,12 +54,17 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
         EditorGUILayout.EndScrollView();
     }
 
+    /// <summary>
+    /// Assign a reference to the Analyzer that this Subwindow sets values for
+    /// </summary>
+    /// <param name="analyzer">Analyzer instance from outside this class</param>
     public void AssignAnalyzer(Coda.Analyzer analyzer) {
         this.analyzer = analyzer;
     } 
 
     public virtual void ProcessAudio() {
-        triggerAnalysis = true;
+        triggerAnalysis = true;//signal to say we are ready to begin processing audio
+                                //(don't do it here because this is just controls)
 
         //Debug.LogError("IMPLEMENT ME!!!!");
         //analyzer.ProcessAudio(musicToAnalyze as AudioClip);
