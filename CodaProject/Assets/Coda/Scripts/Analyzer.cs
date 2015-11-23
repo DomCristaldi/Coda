@@ -108,21 +108,30 @@ namespace Coda {
 	            double avg = data.Skip(i).Take(partitionSize).Average();
                 //finds the highest energy sample in the current partition
 	            int largest = i;
+                double variance = 0;
 				for(int j = 0; j < partitionSize * beatDetectionOverlapPercent; j++)
 				{
-	                if (data[i + j] > data[largest]) {
-	                    largest = i+j;
-	                }
+	                //if (data[i + j] > data[largest]) {
+	                //    largest = i+j;
+	                //}
+                    variance += (data[i + j] - avg) * (data[i + j] - avg);
 				}
+
+                variance /= partitionSize * beatDetectionOverlapPercent;
+                double thresh = (-0.0025714 * variance) + 1.5142857;
+                //Debug.Log(thresh);
+
                 //if the highest energy sample is threshold percent larger than the average, then we mark it as a beat.
-	            if (data[largest] * threshold > avg) {
-	                _beatList.AddBeat(((float)largest / data.Length) * clip.length, 1f,data[largest]);
-	            }
+                for (int j = 0; j < partitionSize * beatDetectionOverlapPercent; j++) {
+                    if (data[i+j] > thresh * avg) {
+                        _beatList.AddBeat(((float)(i + j) / data.Length) * clip.length, 1f, data[i + j]);
+                    }
+                }
 	        }
 
             //eliminate double positives (the same beat occurring in two overlapping partitions, for example) by removing beats with extremely similar timestamps
 	        for(int i = 0; i < _beatList.beats.Count-1; i++) {
-	            if((_beatList.beats[i+1].timeStamp - _beatList.beats[i].timeStamp) < .05) {
+	            if((_beatList.beats[i+1].timeStamp - _beatList.beats[i].timeStamp) < .1) {
 	                if(_beatList.beats[i + 1].energy > _beatList.beats[i].energy) {
 	                    _beatList.beats.RemoveAt(i);
 	                }
