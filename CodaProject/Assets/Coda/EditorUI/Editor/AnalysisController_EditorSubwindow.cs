@@ -20,8 +20,7 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
     public int numPartitions = 10000;
     public float dataAbstractionOverlapPercent = 0.5f;
     [Tooltip("If this percentage of a point is above the average it is considered a Beat\nHigher numbers->false positives\nLower numbers->miss Beats")]
-    public float threshold = 0.25f;
-    public float beatDetectionOverlapPercent = 0.5f;
+    public float threshold = 1f;
 
 
     public AnalysisController_EditorSubwindow() {
@@ -66,8 +65,7 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
 
             numPartitions = EditorGUILayout.IntField("Number of Partitions", numPartitions);
             dataAbstractionOverlapPercent = EditorGUILayout.Slider("Raw Overlap Percent", dataAbstractionOverlapPercent, _minOverlapPercent, 1.0f);
-            threshold = EditorGUILayout.Slider("Threshold", threshold, 0.0f, 1.0f);
-            beatDetectionOverlapPercent = EditorGUILayout.Slider("Partitioned Overlap Percent", beatDetectionOverlapPercent, _minOverlapPercent, 1.0f);
+            threshold = EditorGUILayout.Slider("Threshold", threshold, 0.5f, 1.5f);
             
         }
 

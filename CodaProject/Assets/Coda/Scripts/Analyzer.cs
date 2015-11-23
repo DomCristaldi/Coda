@@ -22,7 +22,7 @@ namespace Coda {
 		private double[] _averages;
 		
 		//public int numPartitions = 10000;
-		//public float dataAbstractionOverlapPercent = 0.5f; 
+		//public float overlapPercent = 0.5f; 
         //public float threshold = 1 - 0.75f; //larger float values are more strict
         //public float beatDetectionOverlapPercent = 0.5f;
 
@@ -32,18 +32,20 @@ namespace Coda {
 		/// </summary>
 		/// <returns>The FFT data array.</returns>
 		/// <param name="clip">Audio clip to process.</param>
-        public double[] ProcessAudio(AudioClip clip, int numPartitions, float dataAbstractionOverlapPercent) {
+        /// <param name="numPartitions">Number of pieces to split the song into for analysis</param>
+        /// <param name="overlapPercent">The percentage which the partitions overlap each other</param>
+        public double[] ProcessAudio(AudioClip clip, int numPartitions, float overlapPercent) {
 
-            _averages = new double[(int)(numPartitions / dataAbstractionOverlapPercent) - 1];
+            _averages = new double[(int)(numPartitions / overlapPercent) - 1];
 	        int samplesPerPartition = (int)(clip.samples / numPartitions);
 
 
-            int numDivisions = (int)(numPartitions / dataAbstractionOverlapPercent) - 1; 
+            int numDivisions = (int)(numPartitions / overlapPercent) - 1; 
             //Because the partitions overlap, the number of iterations is the number of partitions multiplied by the inverse of the overlap percent
 			for (int i = 0; i < numDivisions; i++) {
 
 	            float[] samples = new float[samplesPerPartition];
-	            int input = i * ((int) (samples.Length * dataAbstractionOverlapPercent)); //the offset to start getting song data increases by overlapPercent as i is incremented
+	            int input = i * ((int) (samples.Length * overlapPercent)); //the offset to start getting song data increases by overlapPercent as i is incremented
 	            clip.GetData(samples, input); 
 	            
                 //the raw partition data is run through the Blackman-Harris windowing function            
@@ -95,7 +97,8 @@ namespace Coda {
 		/// <returns>A beatmap of the song.</returns>
 		/// <param name="data">Raw data.</param>
 		/// <param name="clip">Audio clip to analyze.</param>
-        public BeatMap AnalyzeData(double[] data, AudioClip clip, float threshold, float beatDetectionOverlapPercent) {
+        /// <param name="thresholdModifier">Threshold value modifier</param>
+        public BeatMap AnalyzeData(double[] data, AudioClip clip, float thresholdModifier) {
 	        _beatList = new BeatMap(clip.name, clip.length);
 			int numParts = (int)clip.length;
 			int partitionSize = (data.Length+1)/numParts;
@@ -103,26 +106,25 @@ namespace Coda {
             //We only care about the magnitude of our data, so we get the absolute values before doing analysis
 			data = data.ToList().Select(i => (double)Mathf.Abs((float)i)).ToArray();
 
-	        for(int i = 0; i < data.Length-(int)(partitionSize * beatDetectionOverlapPercent); i += (int)(partitionSize * beatDetectionOverlapPercent)) {
+	        for(int i = 0; i < data.Length-(int)(partitionSize); i += (int)(partitionSize)) {
 	            //finds the average value of the sub-partition starting at index i and of size partitionSize
 	            double avg = data.Skip(i).Take(partitionSize).Average();
                 //finds the highest energy sample in the current partition
 	            int largest = i;
+                //calculate the average energy variance in the partition
                 double variance = 0;
-				for(int j = 0; j < partitionSize * beatDetectionOverlapPercent; j++)
+				for(int j = 0; j < partitionSize; j++)
 				{
-	                //if (data[i + j] > data[largest]) {
-	                //    largest = i+j;
-	                //}
                     variance += (data[i + j] - avg) * (data[i + j] - avg);
 				}
-
-                variance /= partitionSize * beatDetectionOverlapPercent;
+                
+                variance /= partitionSize;
+                //calculate the base threshold using some magic numbers and the variance
                 double thresh = (-0.0025714 * variance) + 1.5142857;
-                //Debug.Log(thresh);
+                thresh *= thresholdModifier;
 
-                //if the highest energy sample is threshold percent larger than the average, then we mark it as a beat.
-                for (int j = 0; j < partitionSize * beatDetectionOverlapPercent; j++) {
+                //if the any sample is threshold percent larger than the average, then we mark it as a beat.
+                for (int j = 0; j < partitionSize; j++) {
                     if (data[i+j] > thresh * avg) {
                         _beatList.AddBeat(((float)(i + j) / data.Length) * clip.length, 1f, data[i + j]);
                     }

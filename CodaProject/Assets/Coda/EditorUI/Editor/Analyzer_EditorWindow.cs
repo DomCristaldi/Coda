@@ -128,8 +128,7 @@ namespace Coda {
                 //feed in frequency data to get a Beatmap
 	            BeatMap beats = _analyzer.AnalyzeData(waveformData,
                                                       _analysisControlWindow.musicToAnalyze, 
-                                                      _analysisControlWindow.threshold, 
-                                                      _analysisControlWindow.beatDetectionOverlapPercent);
+                                                      _analysisControlWindow.threshold);
 
                 //SERIALIZATOIN
 				WaveformToFile(waveformData, _analysisControlWindow.musicToAnalyze.name);
