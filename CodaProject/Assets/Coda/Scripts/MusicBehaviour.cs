@@ -24,11 +24,19 @@ namespace Coda {
 		}
 
 		/// <summary>
-		/// Called by the Maestro on every beat if this MusicBehaviour is subscribed to it.
+		/// Called by the Maestro at Update of every beat if this MusicBehaviour is subscribed to it.
 		/// </summary>
 		public virtual void OnBeat () {
 
 		}
+
+        /// <summary>
+        /// Called by the Maestro at LateUpdate of every beat if this MusicBehaviour is subscribed to it.
+        /// </summary>
+        public virtual void LateOnBeat () {
+
+        }
+
 	}
 
 }

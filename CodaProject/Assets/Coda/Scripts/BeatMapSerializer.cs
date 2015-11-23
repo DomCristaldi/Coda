@@ -62,6 +62,15 @@ namespace Coda {
 	    public float frequency;
 	    [XmlAttribute("energy")]
 	    public double energy;
+
+        public static bool operator == (Beat beat1, Beat beat2) {
+            return (beat1.timeStamp == beat2.timeStamp && beat1.frequency == beat2.frequency && beat1.energy == beat2.energy);
+        }
+
+        public static bool operator != (Beat beat1, Beat beat2) {
+            return !(beat1 == beat2);
+        }
+
 	}
 
 	/// <summary>
