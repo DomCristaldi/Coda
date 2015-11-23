@@ -331,11 +331,11 @@ namespace Coda {
 		/// Activates during every beat on the beatmap.
 		/// </summary>
 		void OnBeat () {
-			Debug.Log("Beat.");
+			//Debug.Log("Beat.");
 		}
 
         void LateOnBeat () {
-            Debug.Log("Late Update Beat.");
+            //Debug.Log("Late Update Beat.");
         }
 
 		/// <summary>
