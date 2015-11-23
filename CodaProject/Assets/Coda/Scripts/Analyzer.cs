@@ -21,30 +21,24 @@ namespace Coda {
 		private BeatMap _beatList;
 		private double[] _averages;
 		
-		public int numPartitions = 10000;
-		public float dataAbstractionOverlapPercent = 0.5f; 
-        public float threshold = 1 - .75f; //larger float values are more strict
-        public float beatDetectionOverlapPercent = .5f;
+		//public int numPartitions = 10000;
+		//public float dataAbstractionOverlapPercent = 0.5f; 
+        //public float threshold = 1 - 0.75f; //larger float values are more strict
+        //public float beatDetectionOverlapPercent = 0.5f;
 
 
-		float inverseOverlap {
-			get {
-				return 1.0f / dataAbstractionOverlapPercent;
-			}
-		}
-		
 		/// <summary>
 		/// Processes raw audio data to find average energy for overlapping partitions.
 		/// </summary>
 		/// <returns>The FFT data array.</returns>
 		/// <param name="clip">Audio clip to process.</param>
-		public double[] ProcessAudio (AudioClip clip) {
-            Debug.Log(threshold);
-			_averages = new double[(int)(numPartitions * inverseOverlap) - 1];
+        public double[] ProcessAudio(AudioClip clip, int numPartitions, float dataAbstractionOverlapPercent) {
+
+            _averages = new double[(int)(numPartitions / dataAbstractionOverlapPercent) - 1];
 	        int samplesPerPartition = (int)(clip.samples / numPartitions);
 
 
-			int numDivisions = (int)(numPartitions * inverseOverlap) -1; 
+            int numDivisions = (int)(numPartitions / dataAbstractionOverlapPercent) - 1; 
             //Because the partitions overlap, the number of iterations is the number of partitions multiplied by the inverse of the overlap percent
 			for (int i = 0; i < numDivisions; i++) {
 
@@ -101,7 +95,7 @@ namespace Coda {
 		/// <returns>A beatmap of the song.</returns>
 		/// <param name="data">Raw data.</param>
 		/// <param name="clip">Audio clip to analyze.</param>
-		public BeatMap AnalyzeData(double[] data, AudioClip clip) {
+        public BeatMap AnalyzeData(double[] data, AudioClip clip, float threshold, float beatDetectionOverlapPercent) {
 	        _beatList = new BeatMap(clip.name, clip.length);
 			int numParts = (int)clip.length;
 			int partitionSize = (data.Length+1)/numParts;

@@ -11,7 +11,6 @@ namespace Coda {
 
         private Analyzer _analyzer;
 
-
 	    //public List<BaseEditorSubwindow> subwindowList;
 
 	    [SerializeField]
@@ -19,8 +18,8 @@ namespace Coda {
 	    [SerializeField]
 	    private WaveformMarkup_EditorSubwindow _waveformMarkupWindow;
 
-	    private Rect _controlsPos = new Rect(0, 0, 250, 200);//Analysis Controller Subwindow location & dimensions
-        private Rect _waveformPos = new Rect(250, 0, 500, 300);//Waveform Markup Subwindow location & dimensions
+	    private Rect _controlsPos = new Rect(0, 0, 400, 200);//Analysis Controller Subwindow location & dimensions
+        private Rect _waveformPos = new Rect(400, 0, 500, 300);//Waveform Markup Subwindow location & dimensions
 
         private AudioClip _prevAudioClip;
 
@@ -107,8 +106,15 @@ namespace Coda {
 	            _analysisControlWindow.triggerAnalysis = false;
 
                 //ANALYSIS
-	            double[] waveformData = _analyzer.ProcessAudio(_analysisControlWindow.musicToAnalyze);//feed Analyzer the user-defined audio file to get audio as frequency data
-	            BeatMap beats = _analyzer.AnalyzeData(waveformData, _analysisControlWindow.musicToAnalyze);//feed in frequency data to get a Beatmap
+                //feed Analyzer the user-defined audio file to get audio as frequency data
+	            double[] waveformData = _analyzer.ProcessAudio(_analysisControlWindow.musicToAnalyze, 
+                                                               _analysisControlWindow.numPartitions,
+                                                               _analysisControlWindow.dataAbstractionOverlapPercent);
+                //feed in frequency data to get a Beatmap
+	            BeatMap beats = _analyzer.AnalyzeData(waveformData,
+                                                      _analysisControlWindow.musicToAnalyze, 
+                                                      _analysisControlWindow.threshold, 
+                                                      _analysisControlWindow.beatDetectionOverlapPercent);
 
                 //SERIALIZATOIN
 				WaveformToFile(waveformData, _analysisControlWindow.musicToAnalyze.name);

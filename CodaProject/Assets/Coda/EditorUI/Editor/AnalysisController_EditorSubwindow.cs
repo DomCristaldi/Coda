@@ -14,6 +14,16 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
     [SerializeField]
     private bool _advancedSettingsFoldout = false;
 
+
+    private float _minOverlapPercent = 0.05f;
+
+    public int numPartitions = 10000;
+    public float dataAbstractionOverlapPercent = 0.5f;
+    [Tooltip("If this percentage of a point is above the average it is considered a Beat\nHigher numbers->false positives\nLower numbers->miss Beats")]
+    public float threshold = 0.25f;
+    public float beatDetectionOverlapPercent = 0.5f;
+
+
     public override void DoWindowContents(int unusedWindowID) {
         //base.DoWindowContents(unusedWindowID);
 
@@ -23,7 +33,8 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
 
         EditorGUILayout.BeginVertical();
         //field to drop in music file
-        musicToAnalyze = (AudioClip)EditorGUILayout.ObjectField(musicToAnalyze, typeof(AudioClip), true);
+
+        EditorGUILayout.BeginHorizontal();
 
         //button to proceed with music processing
         if (GUILayout.Button("Analyze")) {
@@ -35,6 +46,10 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
             }
         }
 
+        musicToAnalyze = (AudioClip)EditorGUILayout.ObjectField(musicToAnalyze, typeof(AudioClip), true);
+
+        EditorGUILayout.EndHorizontal();
+
         EditorGUILayout.EndVertical();
 
 
@@ -43,10 +58,12 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
         //ADVANCED CONTROLS DROPDOWN MENU
         _advancedSettingsFoldout = EditorGUILayout.Foldout(_advancedSettingsFoldout, "Advanced Settings");
         if (_advancedSettingsFoldout) {
-            analyzer.numPartitions = EditorGUILayout.IntField("Number of Partitions", analyzer.numPartitions);
-            analyzer.dataAbstractionOverlapPercent = EditorGUILayout.FloatField("Raw Overlap Percent", analyzer.dataAbstractionOverlapPercent);
-            analyzer.threshold = EditorGUILayout.FloatField("Threshold", analyzer.threshold);
-            analyzer.beatDetectionOverlapPercent = EditorGUILayout.FloatField("Partitioned Overlap Percent", analyzer.beatDetectionOverlapPercent);
+
+            numPartitions = EditorGUILayout.IntField("Number of Partitions", numPartitions);
+            dataAbstractionOverlapPercent = EditorGUILayout.Slider("Raw Overlap Percent", dataAbstractionOverlapPercent, _minOverlapPercent, 1.0f);
+            threshold = EditorGUILayout.Slider("Threshold", threshold, 0.0f, 1.0f);
+            beatDetectionOverlapPercent = EditorGUILayout.Slider("Partitioned Overlap Percent", beatDetectionOverlapPercent, _minOverlapPercent, 1.0f);
+            
         }
         EditorGUILayout.EndVertical();
 
