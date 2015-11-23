@@ -24,6 +24,11 @@ public class AnalysisController_EditorSubwindow : BaseEditorSubwindow {
     public float beatDetectionOverlapPercent = 0.5f;
 
 
+    public AnalysisController_EditorSubwindow() {
+        windowName = "Settings";
+    }
+
+
     public override void DoWindowContents(int unusedWindowID) {
         //base.DoWindowContents(unusedWindowID);
 
