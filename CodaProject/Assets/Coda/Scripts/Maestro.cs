@@ -113,6 +113,34 @@ namespace Coda {
             get { return System.Math.Min(timeSincePreviousBeat_Double, timeUntilNextBeat_Double); }
         }
 
+		/// <summary>
+		/// Gets the previous beat.
+		/// </summary>
+		public Beat previousBeat {
+			get { return _prevBeat; }
+		}
+
+		/// <summary>
+		/// Gets the next beat.
+		/// </summary>
+		public Beat nextBeat {
+			get { return _prevBeat; }
+		}
+
+		/// <summary>
+		/// Gets the beat which is closest to the current frame.
+		/// </summary>
+		public Beat closestBeat {
+			get {
+				if (Mathf.Abs((float)(_nextBeat.timeStamp - _beatTimer)) < Mathf.Abs((float)(_prevBeat.timeStamp - _beatTimer))) {
+					return _nextBeat;
+				}
+				else {
+					return _prevBeat;
+				}
+			}
+		}
+
         /// <summary>
         /// Makes a coroutine wait until the next beat.
         /// </summary>
