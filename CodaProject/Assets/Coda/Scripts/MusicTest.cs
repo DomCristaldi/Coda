@@ -14,6 +14,6 @@ public class MusicTest : Coda.MusicBehaviour {
 	}*/
 
     public override void OnBeat() {
-        transform.rotation *= Quaternion.Euler(new Vector3(45,0,0));
+        transform.rotation *= Quaternion.Euler(new Vector3(10,0,0));
     }
 }
