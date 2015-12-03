@@ -22,9 +22,9 @@ namespace Coda {
 				}
 				
 				XmlSerializer serializer = new XmlSerializer(typeof(BeatMap));
-				FileStream stream = new FileStream(BeatMapSerializer.filePath + "/BeatMap_" + map.fileName + ".xml", FileMode.Create);
-				serializer.Serialize(stream, map);
-				stream.Close();
+				StreamWriter writer = new StreamWriter(BeatMapSerializer.filePath + "/BeatMap_" + map.fileName + ".xml", false, System.Text.Encoding.UTF8);
+				serializer.Serialize(writer, map);
+				writer.Close();
 				Debug.Log("Wrote beatmap to file");   
 			}
 		}
@@ -33,9 +33,9 @@ namespace Coda {
 			
 			public static BeatMap ReadBeatMap(TextAsset xmlFile) {
 				XmlSerializer serializer = new XmlSerializer(typeof(BeatMap));
-				FileStream stream = new FileStream(BeatMapSerializer.filePath + "/" + xmlFile.name + ".xml", FileMode.Open);
-				BeatMap newMap = (BeatMap)serializer.Deserialize(stream);
-				stream.Close();
+				StreamReader reader = new StreamReader(BeatMapSerializer.filePath + "/" + xmlFile.name + ".xml", System.Text.Encoding.UTF8);
+				BeatMap newMap = (BeatMap)serializer.Deserialize(reader);
+				reader.Close();
 				return newMap;
 			}
 			
