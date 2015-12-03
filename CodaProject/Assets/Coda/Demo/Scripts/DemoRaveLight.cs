@@ -14,6 +14,7 @@ public class DemoRaveLight : MusicBehaviour {
     public float timePrecison;
     private float _huePerSecond;
     private Light _light;
+    public Renderer lightBase;
 
     protected override void Awake () {
         _light = GetComponent<Light>();

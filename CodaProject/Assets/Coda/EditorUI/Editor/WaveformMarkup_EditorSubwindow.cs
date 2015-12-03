@@ -27,7 +27,7 @@ namespace Coda {
 		public WaveformMarkup_EditorSubwindow() {
 	        windowName = "Waveform";
 
-            _zoomLevel = 1.0f;
+            _zoomLevel = 0.0f;
 	    }
 
         /// <summary>
