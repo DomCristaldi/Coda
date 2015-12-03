@@ -356,11 +356,11 @@ Prefab:
     - target: {fileID: 11400304, guid: 2d28b9d8ef3a4d54cb223ab9ad334ba5, type: 2}
       propertyPath: beatmapFile
       value: 
-      objectReference: {fileID: 4900000, guid: 8cdbc4e24bfd1024daaff6f9b0f36f70, type: 3}
+      objectReference: {fileID: 4900000, guid: 6ffef61d503c0b2458c6bb52bc0407c3, type: 3}
     - target: {fileID: 8277544, guid: 2d28b9d8ef3a4d54cb223ab9ad334ba5, type: 2}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: ff22f7de62db02c43a05d686504a8e30, type: 3}
+      objectReference: {fileID: 8300000, guid: 7f80fafaa3d8d39478ec23158efcf0c9, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2d28b9d8ef3a4d54cb223ab9ad334ba5, type: 2}
   m_IsPrefabParent: 0

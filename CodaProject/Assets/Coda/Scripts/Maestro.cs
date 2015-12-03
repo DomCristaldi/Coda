@@ -22,10 +22,10 @@ namespace Coda {
 	    public static Maestro current = null;
 
 		public TextAsset beatmapFile;
-		private BeatMap beatmap;
+		private BeatMap _beatmap;
 	    private AudioSource _audio;
 
-		public bool loopAudio;
+		private bool _loopAudio;
 
 		public delegate void OnBeatDelegate();
 		public OnBeatDelegate onBeat;
@@ -267,6 +267,7 @@ namespace Coda {
 				Debug.LogError("Maestro: No Audio Clip!");
 			}
 			else {
+				_loopAudio = _audio.loop;
 				if ("BeatMap_" + _audio.clip.name.Replace(".mp3", "") != beatmapFile.name) {
 					Debug.LogWarning("Maestro: Audio Clip and Beatmap File name mismatch!");
 				}
@@ -274,7 +275,7 @@ namespace Coda {
 			onBeat = OnBeat;
             lateOnBeat = LateOnBeat;
 			listeners = new List<MusicBehaviour>();
-			beatmap = BeatMapSerializer.BeatMapReader.ReadBeatMap(beatmapFile);
+			_beatmap = BeatMapSerializer.BeatMapReader.ReadBeatMap(beatmapFile);
 	    }
 
 		void Start () {
@@ -306,11 +307,11 @@ namespace Coda {
 		/// </summary>
 		/// <returns><c>true</c>, if tracking was started successfully, <c>false</c> otherwise.</returns>
 		bool StartTracking () {
-			if (beatmap == null || beatmap.beats.Count == 0) {
+			if (_beatmap == null || _beatmap.beats.Count == 0) {
 				return false;
 			}
 			_songEnded = false;
-			_nextBeat = beatmap.beats[0];
+			_nextBeat = _beatmap.beats[0];
 			_beatTimer = 0.0;
 			_beatIndex = 0;
 			return true;
@@ -321,7 +322,7 @@ namespace Coda {
 		/// </summary>
 		/// <returns><c>true</c>, if there was a beat this frame, <c>false</c> otherwise.</returns>
 		bool TrackBeats () {
-			if (!(_songEnded && !loopAudio)) {
+			if (!(_songEnded && !_loopAudio)) {
 				_beatTimer += Time.deltaTime;
 			}
 			else {
@@ -329,7 +330,7 @@ namespace Coda {
 				return false;
 			}
 			if (_songEnded) {
-				if (_beatTimer >= (double)beatmap.songLength) {
+				if (_beatTimer >= (double)_beatmap.songLength) {
                     if (_audioClipExists) {
                         _audio.Stop();
                     }
@@ -341,12 +342,12 @@ namespace Coda {
 			}
 			else if (_nextBeat.timeStamp <= _beatTimer) {
 				_beatIndex++;
-				if (_beatIndex == beatmap.beats.Count) {
+				if (_beatIndex == _beatmap.beats.Count) {
 					_songEnded = true;
 				}
 				else {
                     _prevBeat = _nextBeat;
-					_nextBeat = beatmap.beats[_beatIndex];
+					_nextBeat = _beatmap.beats[_beatIndex];
 				}
                 _beatFrame = true;
 				return true;
