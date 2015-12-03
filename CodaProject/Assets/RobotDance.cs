@@ -21,7 +21,7 @@ public class RobotDance : Coda.MusicBehaviour {
         int lastState = anim.GetInteger("PoseInt");
         int nextState = lastState;
         while(nextState == lastState) {
-            nextState = Random.Range(0, 3);
+            nextState = Random.Range(0, 4);
         }
         anim.SetInteger("PoseInt", nextState);
     }
