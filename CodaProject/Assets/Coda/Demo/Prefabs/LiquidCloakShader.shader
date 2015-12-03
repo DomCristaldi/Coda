@@ -6,7 +6,7 @@
 		_IndexRefract ("Index of Refraction", Range(1,5)) = 1.333
 	}
 	SubShader {
-		Tags { "Queue" = "Transparent" }
+		Tags { "Queue" = "Overlay+1" }
 		LOD 200
 		GrabPass { "_GrabTex" }
 		CGPROGRAM
