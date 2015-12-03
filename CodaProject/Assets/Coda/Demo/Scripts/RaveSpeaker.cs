@@ -17,6 +17,7 @@ public class RaveSpeaker : MusicBehaviour {
 
     protected override void Start () {
         base.Start();
+        raveMat.SetColor("_Color", new ColorHelper.ColorHSV(startHue, 1f, 1f, 1f).ToColor());
         DetermineHuePerSecond();
     }
 

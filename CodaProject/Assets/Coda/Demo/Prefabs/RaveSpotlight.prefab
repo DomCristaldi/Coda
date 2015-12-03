@@ -200,7 +200,7 @@ MonoBehaviour:
   baseAngle: 40
   extraAngle: 10
   timePrecison: .100000001
-  lightBase: {fileID: 0}
+  lightBase: {fileID: 2321736}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
