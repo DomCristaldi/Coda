@@ -77,7 +77,7 @@ namespace Coda {
         public float timeSincePreviousBeat {
             get {
                 if (_prevBeat == default(Beat)) {
-                    return -1f;
+                    return (float)_beatTimer;
                 }
                 else {
                     return (float)(_prevBeat.timeStamp - _beatTimer);
@@ -91,7 +91,7 @@ namespace Coda {
         public double timeSincePreviousBeat_Double {
             get {
                 if (_prevBeat == default(Beat)) {
-                    return -1;
+                    return _beatTimer;
                 }
                 else {
                     return _prevBeat.timeStamp - _beatTimer;
@@ -124,7 +124,7 @@ namespace Coda {
 		/// Gets the next beat.
 		/// </summary>
 		public Beat nextBeat {
-			get { return _prevBeat; }
+			get { return _nextBeat; }
 		}
 
 		/// <summary>
@@ -140,6 +140,34 @@ namespace Coda {
 				}
 			}
 		}
+
+        /// <summary>
+        /// Gets the index of the next beat.
+        /// </summary>
+        public int nextBeatIndex {
+            get { return _beatIndex; }
+        }
+
+        /// <summary>
+        /// Gets the index of the previous beat.
+        /// </summary>
+        public int prevBeatIndex {
+            get { return _beatIndex - 1; }
+        }
+
+        /// <summary>
+        /// Gets the index of the beat which is closest to the current frame.
+        /// </summary>
+        public int closestBeatIndex {
+            get {
+                if (Mathf.Abs((float)(_nextBeat.timeStamp - _beatTimer)) < Mathf.Abs((float)(_prevBeat.timeStamp - _beatTimer))) {
+                    return nextBeatIndex;
+                }
+                else {
+                    return prevBeatIndex;
+                }
+            }
+        }
 
         /// <summary>
         /// Makes a coroutine wait until the next beat.
@@ -271,6 +299,7 @@ namespace Coda {
 					Debug.LogWarning("Maestro: Audio Clip and Beatmap File name mismatch!");
 				}
 			}
+            _beatIndex = 0;
 			onBeat = OnBeat;
             lateOnBeat = LateOnBeat;
 			listeners = new List<MusicBehaviour>();
@@ -312,7 +341,6 @@ namespace Coda {
 			_songEnded = false;
 			_nextBeat = beatmap.beats[0];
 			_beatTimer = 0.0;
-			_beatIndex = 0;
 			return true;
 		}
 
@@ -343,10 +371,13 @@ namespace Coda {
 				_beatIndex++;
 				if (_beatIndex == beatmap.beats.Count) {
 					_songEnded = true;
+                    if (loopAudio) {
+                        _nextBeat = beatmap.beats[0];
+                    }
 				}
 				else {
                     _prevBeat = _nextBeat;
-					_nextBeat = beatmap.beats[_beatIndex];
+					_nextBeat = beatmap.beats[_beatIndex % beatmap.beats.Count];
 				}
                 _beatFrame = true;
 				return true;
