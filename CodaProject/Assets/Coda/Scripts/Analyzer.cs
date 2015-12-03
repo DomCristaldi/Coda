@@ -110,7 +110,7 @@ namespace Coda {
 	            //finds the average value of the sub-partition starting at index i and of size partitionSize
 	            double avg = data.Skip(i).Take(partitionSize).Average();
                 //finds the highest energy sample in the current partition
-	            int largest = i;
+	            //int largest = i;
                 //calculate the average energy variance in the partition
                 double variance = 0;
 				for(int j = 0; j < partitionSize; j++)
