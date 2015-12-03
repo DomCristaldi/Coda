@@ -14,6 +14,7 @@ public class DemoRaveLight : MusicBehaviour {
     public float timePrecison;
     private float _huePerSecond;
     private Light _light;
+    public Renderer lightBase;
 
     protected override void Awake () {
         _light = GetComponent<Light>();
@@ -28,6 +29,7 @@ public class DemoRaveLight : MusicBehaviour {
 
     protected override void Update () {
         _light.color = _light.color.ToHSV().ShiftHue(_huePerSecond * Time.deltaTime).ToColor();
+        lightBase.material.color = _light.color;
         if (Maestro.current.closestBeatIndex % 2 == 0) {
             float timeDiff;
             if (Maestro.current.IsOnBeat(timePrecison, out timeDiff)) {
