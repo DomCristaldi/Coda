@@ -15,6 +15,68 @@ namespace JBirdEngine {
         public static class BobRoss {
 
             /// <summary>
+            /// An enum that contains all the colors of the Bob Ross palette.
+            /// </summary>
+            public enum ColorPalette {
+                happyLittleAccident,
+                alizarinCrimson,
+                brightRed,
+                permanentRed,
+                cadmiumYellow,
+                darkSienna,
+                indianYellow,
+                midnightBlack,
+                phthaloBlue,
+                phthaloGreen,
+                prussianBlue,
+                sapGreen,
+                titaniumWhite,
+                vanDykeBrown,
+                yellowOchre
+            }
+
+            /// <summary>
+            /// Converts ColorPalette enum value to a Color.
+            /// </summary>
+            /// <param name="enumValue">Enum value.</param>
+            public static Color EnumToColor (ColorPalette enumValue) {
+                switch (enumValue) {
+                    case ColorPalette.happyLittleAccident:
+                        return HappyLittleAccident();
+                    case ColorPalette.alizarinCrimson:
+                        return alizarinCrimson;
+                    case ColorPalette.brightRed:
+                        return brightRed;
+                    case ColorPalette.permanentRed:
+                        return permanentRed;
+                    case ColorPalette.cadmiumYellow:
+                        return cadmiumYellow;
+                    case ColorPalette.darkSienna:
+                        return darkSienna;
+                    case ColorPalette.indianYellow:
+                        return indianYellow;
+                    case ColorPalette.midnightBlack:
+                        return midnightBlack;
+                    case ColorPalette.phthaloBlue:
+                        return phthaloBlue;
+                    case ColorPalette.phthaloGreen:
+                        return phthaloGreen;
+                    case ColorPalette.prussianBlue:
+                        return prussianBlue;
+                    case ColorPalette.sapGreen:
+                        return sapGreen;
+                    case ColorPalette.titaniumWhite:
+                        return titaniumWhite;
+                    case ColorPalette.vanDykeBrown:
+                        return vanDykeBrown;
+                    case ColorPalette.yellowOchre:
+                        return yellowOchre;
+                    default:
+                        return HappyLittleAccident();
+                }
+            }
+
+            /// <summary>
             /// One of the most versatile of the Bob Ross colors.
             /// </summary>
             public static Color alizarinCrimson {
