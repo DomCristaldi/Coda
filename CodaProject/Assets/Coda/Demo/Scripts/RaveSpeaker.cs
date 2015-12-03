@@ -18,11 +18,13 @@ public class RaveSpeaker : MusicBehaviour {
     protected override void Start () {
         base.Start();
         raveMat.SetColor("_Color", new ColorHelper.ColorHSV(startHue, 1f, 1f, 1f).ToColor());
+        raveMat.SetColor("_EmissionColor", raveMat.color);
         DetermineHuePerSecond();
     }
 
     protected override void Update () {
         raveMat.SetColor("_Color", raveMat.color.ToHSV().ShiftHue(_huePerSecond * Time.deltaTime).ToColor());
+        raveMat.SetColor("_EmissionColor", raveMat.color);
         if (Maestro.current.closestBeatIndex % 2 == 0) {
             float timeDiff;
             if (Maestro.current.IsOnBeat(timePrecison, out timeDiff)) {
