@@ -4,6 +4,7 @@ using System.Collections;
 public class RhythmicFlee : MonoBehaviour {
 
     public Rigidbody rb;
+    public float force = 20f;
 
 	// Use this for initialization
 	void Awake () {
@@ -29,7 +30,7 @@ public class RhythmicFlee : MonoBehaviour {
                                 Random.value - 0.5f,
                                 Random.value - 0.5f).normalized;
 
-        rb.AddForce(f * 20, ForceMode.Impulse);
+        rb.AddForce(f * force, ForceMode.Impulse);
         Destroy(gameObject, 3);
     }
 }

@@ -4,6 +4,7 @@ using System.Collections;
 public class BoxSpawner : MonoBehaviour {
 
     public GameObject proj;
+    public int projsPerFrame = 3;
 
 	// Use this for initialization
 	void Start () {
@@ -14,8 +15,12 @@ public class BoxSpawner : MonoBehaviour {
 	void Update () {
         if (Random.value > .5)
         {
-            Vector3 offset = Random.insideUnitSphere;
-            GameObject i = Instantiate(proj, transform.position + offset, Quaternion.identity) as GameObject;
+            for (int i = 0; i < projsPerFrame; i++)
+            {
+                Vector3 offset = Random.insideUnitSphere;
+                GameObject p = Instantiate(proj, transform.position + offset, Quaternion.identity) as GameObject;
+            }
+            
         }
 	}
 }
