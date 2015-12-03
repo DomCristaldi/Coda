@@ -30,6 +30,6 @@ public class RhythmicFlee : MonoBehaviour {
                                 Random.value - 0.5f).normalized;
 
         rb.AddForce(f * 20, ForceMode.Impulse);
-        Destroy(this, 3);
+        Destroy(gameObject, 3);
     }
 }
