@@ -42,6 +42,21 @@ namespace Coda {
 		private int _beatIndex;
 		private bool _songEnded;
         private bool _beatFrame;
+        private float _averageTimeBetweenBeats = -1f;
+
+        /// <summary>
+        /// Returns the average time between beats.
+        /// </summary>
+        public float averageTimeBetweenBeats {
+            get {
+                if (_averageTimeBetweenBeats == -1f) {
+                    if (beatmap.beats.Count > 1) {
+                        _averageTimeBetweenBeats = (float)((beatmap.beats[beatmap.beats.Count - 1].timeStamp - beatmap.beats[0].timeStamp) / (beatmap.beats.Count - 1));
+                    }
+                }
+                return _averageTimeBetweenBeats;
+            }
+        }
 
         /// <summary>
         /// Returns the time until the next beat as a float.
