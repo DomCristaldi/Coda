@@ -34,7 +34,7 @@ namespace Coda {
 			public static BeatMap ReadBeatMap(TextAsset xmlFile) {
 				XmlSerializer serializer = new XmlSerializer(typeof(BeatMap));
 				StreamReader reader = new StreamReader(BeatMapSerializer.filePath + "/" + xmlFile.name + ".xml", System.Text.Encoding.UTF8);
-				BeatMap newMap = (BeatMap)serializer.Deserialize(reader);
+                BeatMap newMap = (BeatMap)serializer.Deserialize(reader);
 				reader.Close();
 				return newMap;
 			}
