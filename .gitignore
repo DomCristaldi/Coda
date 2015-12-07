@@ -20,6 +20,8 @@
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
 
+# Coda stuff
 *.mp3
 !CodaProject/Assets/Coda/Demo/Music/*.mp3
 CodaProject/Assets/Music/
+CodaProject/Assets/Coda/Waveforms
