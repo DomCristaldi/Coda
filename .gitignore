@@ -21,4 +21,5 @@
 sysinfo.txt
 
 *.mp3
+!CodaProject/Assets/Coda/Demo/Music/*.mp3
 CodaProject/Assets/Music/
