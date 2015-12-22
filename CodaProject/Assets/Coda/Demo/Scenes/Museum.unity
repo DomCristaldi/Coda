@@ -4313,6 +4313,10 @@ Prefab:
       propertyPath: Mute
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11400304, guid: 2d28b9d8ef3a4d54cb223ab9ad334ba5, type: 2}
+      propertyPath: audioClipTracking
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2d28b9d8ef3a4d54cb223ab9ad334ba5, type: 2}
   m_IsPrefabParent: 0
@@ -4384,7 +4388,7 @@ Transform:
   - {fileID: 702833788}
   - {fileID: 500993547}
   m_Father: {fileID: 0}
-  m_RootOrder: 25
+  m_RootOrder: 27
 --- !u!4 &2125121191 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: d85d3a32fb6157d488e31edf82b7b1c4, type: 2}

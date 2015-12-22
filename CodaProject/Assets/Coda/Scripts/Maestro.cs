@@ -22,6 +22,9 @@ namespace Coda {
 	    public static Maestro current = null;
 
 		public TextAsset beatmapFile;
+
+        [Tooltip("Link beat tracking to progression Audioclip in the Maestro")]
+        public bool audioClipTracking = false;
 		private BeatMap beatmap;
 	    private AudioSource _audio;
 
@@ -364,9 +367,19 @@ namespace Coda {
 		/// </summary>
 		/// <returns><c>true</c>, if there was a beat this frame, <c>false</c> otherwise.</returns>
 		bool TrackBeats () {
-			if (!(_songEnded && !loopAudio)) {
+			if (!(_songEnded && !loopAudio) && !audioClipTracking) {
 				_beatTimer += Time.deltaTime;
 			}
+            else if (!(_songEnded && !loopAudio) && audioClipTracking) {
+                if (!_audioClipExists) {
+                    Debug.LogError("Audio clip missing! Add an audio clip to the Maestro AudioSource or uncheck Audio Clip Tracking in the Inspector");
+                    _beatTimer += Time.deltaTime;
+                }
+                else {
+                    double beatTimeElapsed = _audio.time - _beatTimer;
+                    _beatTimer += beatTimeElapsed;
+                }
+            }
 			else {
                 _beatFrame = false;
 				return false;
