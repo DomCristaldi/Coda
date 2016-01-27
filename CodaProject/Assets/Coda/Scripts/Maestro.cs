@@ -46,6 +46,8 @@ namespace Coda {
 		private bool _songEnded;
         private bool _beatFrame;
         private float _averageTimeBetweenBeats = -1f;
+		private float _minTimeBetweenBeats = -1f;
+		private float _maxTimeBetweenBeats = -1f;
 
         /// <summary>
         /// Returns the average time between beats.
@@ -60,6 +62,46 @@ namespace Coda {
                 return _averageTimeBetweenBeats;
             }
         }
+
+		/// <summary>
+		/// Returns the minimum time between beats.
+		/// </summary>
+		public float minTimeBetweenBeats {
+			get {
+				if (_minTimeBetweenBeats == -1f) {
+					if (beatmap.beats.Count > 1) {
+						float minTime = Mathf.Infinity;
+						for (int i = 1; i < beatmap.beats.Count; i++) {
+							if ((float)(beatmap.beats[i].timeStamp - beatmap.beats[i-1].timeStamp) < minTime) {
+								minTime = (float)(beatmap.beats[i].timeStamp - beatmap.beats[i-1].timeStamp);
+							}
+						}
+						_minTimeBetweenBeats = minTime;
+					}
+				}
+				return _minTimeBetweenBeats;
+			}
+		}
+
+		/// <summary>
+		/// Returns the minimum time between beats.
+		/// </summary>
+		public float maxTimeBetweenBeats {
+			get {
+				if (_maxTimeBetweenBeats == -1f) {
+					if (beatmap.beats.Count > 1) {
+						float maxTime = 0f;
+						for (int i = 1; i < beatmap.beats.Count; i++) {
+							if ((float)(beatmap.beats[i].timeStamp - beatmap.beats[i-1].timeStamp) > maxTime) {
+								maxTime = (float)(beatmap.beats[i].timeStamp - beatmap.beats[i-1].timeStamp);
+							}
+						}
+						_maxTimeBetweenBeats = maxTime;
+					}
+				}
+				return _maxTimeBetweenBeats;
+			}
+		}
 
         /// <summary>
         /// Returns the time until the next beat as a float.
