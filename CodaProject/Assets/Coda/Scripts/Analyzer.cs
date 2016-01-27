@@ -6,6 +6,48 @@ using System.Linq;
 
 namespace Coda {
 
+    public static class AnalyzerTools {
+        /// <summary>
+        /// Writes waveform to xml file.
+        /// </summary>
+        /// <param name="data">Raw data from FFT.</param>
+        /// <param name="name">Xml file name.</param>
+        public static void WaveformToFile(double[] data, string name) {
+            Waveform newWave = new Waveform(data, name);
+            WaveformSerializer.WriteWaveformData(newWave);
+        }
+
+        /// <summary>
+        /// Writes beatmap to xml file.
+        /// </summary>
+        /// <param name="beats">Raw data from FFT.</param>
+        /// <param name="name">Xml file name.</param>
+        public static void BeatMapToFile(BeatMap beats, string name) {
+            //BeatMap map = new BeatMap(name, beats.songLength);
+
+            //this is a test using a dummy object
+            //map.AddBeat(1, 3.0f, 5.0f);
+            BeatMapSerializer.BeatMapWriter.WriteBeatMap(beats);
+        }
+
+        /// <summary>
+        /// Writes a beatmap to xml file from BPM and song length.
+        /// </summary>
+        /// <param name="name">Xml file name.</param>
+        /// <param name="bpm">Beats per minute.</param>
+        /// <param name="numBeats">Number of beats.</param>
+        public static void BeatMapFromBPM(string name, float bpm, int numBeats) {
+            float beatStep = 60f / bpm;
+            float length = (float)numBeats * beatStep;
+            BeatMap beats = new BeatMap(name, length);
+            for (float i = 0f; i < length; i += beatStep) {
+                beats.AddBeat(i, 1f, 1);
+            }
+            BeatMapSerializer.BeatMapWriter.WriteBeatMap(beats);
+            Debug.LogFormat("Coda: Created beatmap {0} with BPM of {1} and running time of {2} seconds ({3} beats long).", name, bpm, length, numBeats);
+        }
+    }
+
 	/// <summary>
 	/// Analyzes songs to obtain beatmaps.
 	/// </summary>

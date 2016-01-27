@@ -131,8 +131,8 @@ namespace Coda {
                                                       _analysisControlWindow.threshold);
 
                 //SERIALIZATOIN
-				WaveformToFile(waveformData, _analysisControlWindow.musicToAnalyze.name);
-	            BeatMapToFile(beats, _analysisControlWindow.musicToAnalyze.name);
+				AnalyzerTools.WaveformToFile(waveformData, _analysisControlWindow.musicToAnalyze.name);
+	            AnalyzerTools.BeatMapToFile(beats, _analysisControlWindow.musicToAnalyze.name);
 
                 //DRAWING
 	            _waveformMarkupWindow.waveform = waveformData;
@@ -142,6 +142,7 @@ namespace Coda {
 	        Repaint();//force GUI to draw every update even if not clicked on
 	    }
 
+        /*
 		/// <summary>
 		/// Writes waveform to xml file.
 		/// </summary>
@@ -181,6 +182,7 @@ namespace Coda {
 			BeatMapSerializer.BeatMapWriter.WriteBeatMap(beats);
 			Debug.LogFormat("Coda: Created beatmap {0} with BPM of {1} and running time of {2} seconds ({3} beats long).", name, bpm, length, numBeats);
 		}
+        */
 
 		/// <summary>
 		/// Handles the analyzer window instantiation.
